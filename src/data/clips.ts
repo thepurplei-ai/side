@@ -12,6 +12,26 @@ const CLIPS: Record<ClipKey, number> = {
   city: require('../../assets/videos/city.mp4'),
 };
 
+// Cover pictures for each clip (a frame from the video), shown while it loads and in grids.
+const POSTERS: Record<ClipKey, number> = {
+  hero: require('../../assets/posters/hero.jpg'),
+  mars: require('../../assets/posters/mars.jpg'),
+  christmas: require('../../assets/posters/christmas.jpg'),
+  fantasy: require('../../assets/posters/fantasy.jpg'),
+  ocean: require('../../assets/posters/ocean.jpg'),
+  city: require('../../assets/posters/city.jpg'),
+};
+
+/** The cover picture for a video, or undefined for a video from the phone. */
+export function posterFor(source: MediaSource | undefined): number | undefined {
+  if (!source || source.uri) return undefined;
+  return POSTERS[source.clip ?? 'fantasy'];
+}
+
+export function posterForClip(clip: ClipKey): number {
+  return POSTERS[clip];
+}
+
 export function toVideoSource(source: MediaSource): VideoSource {
   if (source.uri) return { uri: source.uri };
   return CLIPS[source.clip ?? 'fantasy'];

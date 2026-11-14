@@ -1,7 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Silk from '@/components/Silk';
@@ -9,6 +10,7 @@ import { useDockSpace } from '@/components/Dock';
 import { Avatar, Body, Button, compactNumber, Title } from '@/components/ui';
 import VideoGrid from '@/components/VideoGrid';
 import { CLIP_COLORS } from '@/data/clipColors';
+import { posterForClip } from '@/data/clips';
 import { TEMPLATES } from '@/data/seed';
 import { useStore } from '@/store/AppStore';
 import { searchVideos, trending } from '@/store/selectors';
@@ -71,6 +73,8 @@ export default function Discover() {
                   key={t.id}
                   style={[styles.template, { backgroundColor: CLIP_COLORS[t.clip] }]}
                   onPress={() => router.push({ pathname: '/create', params: { template: t.id } })}>
+                  <Image source={posterForClip(t.clip)} style={StyleSheet.absoluteFill} resizeMode="cover" />
+                  <LinearGradient colors={['rgba(26,15,46,0.1)', 'rgba(26,15,46,0.85)']} style={StyleSheet.absoluteFill} />
                   <Ionicons name="sparkles" size={22} color="#fff" />
                   <View>
                     <Text style={styles.templateTitle}>{t.title}</Text>
@@ -120,7 +124,7 @@ const styles = StyleSheet.create({
   tag: { paddingVertical: 8, paddingHorizontal: 14, borderRadius: radius.pill, backgroundColor: colors.surface2 },
   tagText: { color: colors.text, fontFamily: fonts.bold },
   section: { color: colors.text, fontSize: 19, fontFamily: fonts.heavy, marginTop: space.sm },
-  template: { width: 150, height: 190, borderRadius: radius.lg, padding: space.md, justifyContent: 'space-between' },
+  template: { width: 150, height: 190, borderRadius: radius.lg, padding: space.md, justifyContent: 'space-between' , overflow: 'hidden' },
   templateTitle: { color: '#fff', fontFamily: fonts.heavy, fontSize: 17 },
   templateStyle: { color: 'rgba(255,255,255,0.8)', fontSize: 13, fontFamily: fonts.bold },
   creator: { flexDirection: 'row', alignItems: 'center', gap: space.md },

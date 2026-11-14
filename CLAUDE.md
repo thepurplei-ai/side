@@ -12,8 +12,10 @@ them short. Never ask the owner to run terminal commands: run them yourself.
 - Expo (React Native) + TypeScript + Expo Router. Screens live in `src/app/` (every file is a route).
 - Tabs: `src/app/(tabs)/` → Home (`index`), Discover, Create, Studio, Profile.
 - `src/ai/director.ts`: the AI Director (pure TS, offline rules). Tested.
-- `src/ai/recommender.ts`: the For You algorithm (watch time, likes, saves, follows, skips,
-  "Not interested", freshness, diversity, exploration). Pure TS. Tested.
+- `src/ai/recommender.ts`: the For You algorithm v2: TF-IDF fingerprints of each video, long-term +
+  right-now taste vectors, Thompson-sampling bandit per topic, quality/freshness/follow, seen penalties,
+  MMR mixing. Home re-ranks unseen videos after every swipe. Pure TS. Tested.
+- Demo clips 720x1280 + cover pictures (`assets/posters`) made by `scripts/make-sample-videos.sh`.
 - Look: "Purple Silk" (`src/theme.ts`): dark purple silk background (`src/components/Silk.tsx`, add it to every new tab screen), electric violet, a little lemon for highlights, cream, Fraunces serif titles + Manrope.
   Floating dock menu (`src/components/Dock.tsx`) with a violet camera shutter that opens `src/app/camera.tsx`.
   Videos show a "ticket" info panel and a lemon progress line, not a side icon rail.

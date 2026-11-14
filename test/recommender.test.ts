@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { addView, rankFeed, type Signals } from '../src/ai/recommender.ts';
+import { addView, buildTaste, cosine, fingerprints, rankFeed, scoreAll, tokens, type Signals } from '../src/ai/recommender.ts';
 import type { Video } from '../src/types.ts';
 
 const NOW = 1_800_000_000_000;
@@ -51,14 +51,14 @@ test('never the same creator twice in a row when avoidable', () => {
   for (let i = 1; i < order.length; i++) assert.notEqual(order[i].creatorId, order[i - 1].creatorId, order.map((x) => x.id).join());
 });
 
-test('exploration keeps something new in the feed', () => {
+test('variety: a strong taste still leaves room for other topics near the top', () => {
   const s = empty();
   for (const id of ['space1', 'space2']) {
     s.liked[id] = true;
     s.watch[id] = addView(undefined, 12000, 6, NOW - 30 * H);
   }
-  const order = rankFeed(videos, s, { now: NOW, explore: 0.5 }).map((x) => x.id);
-  assert.ok(['xmas1', 'xmas2', 'ocean1', 'hero1'].includes(order[1]), order.join());
+  const order = rankFeed(videos, s, { now: NOW }).map((x) => x.id);
+  assert.ok(order.slice(0, 3).some((id) => !id.startsWith('space')), order.join());
 });
 
 test('watch stats', () => {
@@ -74,4 +74,46 @@ test('same seed gives the same order', () => {
   const a = rankFeed(videos, empty(), { now: NOW, seed: 'x' }).map((x) => x.id);
   const b = rankFeed(videos, empty(), { now: NOW, seed: 'x' }).map((x) => x.id);
   assert.deepEqual(a, b);
+});
+
+test('words: common words dropped, plurals merged', () => {
+  assert.deepEqual(tokens('I am flying over the planets and the planet'), ['flying', 'planet', 'planet']);
+});
+
+test('fingerprints: similar stories are closer than different ones', () => {
+  const vids = [
+    { ...v('a', 'x', ['space']), prompt: 'astronaut lands on mars and finds a cave' },
+    { ...v('b', 'y', ['space']), prompt: 'astronaut explores a red mars canyon' },
+    { ...v('c', 'z', ['christmas']), prompt: 'santa rides a sleigh over snowy roofs' },
+  ];
+  const fps = fingerprints(vids);
+  assert.ok(cosine(fps.get('a')!, fps.get('b')!) > cosine(fps.get('a')!, fps.get('c')!));
+});
+
+test('right-now taste: what you just loved counts more than what you loved days ago', () => {
+  const s = empty();
+  s.liked.xmas1 = true;
+  s.watch.xmas1 = addView(undefined, 12000, 6, NOW - 5 * 24 * H); // days ago
+  s.liked.space1 = true;
+  s.watch.space1 = addView(undefined, 12000, 6, NOW - 5 * 60_000); // 5 minutes ago
+  const fps = fingerprints(videos);
+  const taste = buildTaste(videos, fps, s, NOW);
+  assert.ok(cosine(taste.vector, fps.get('space2')!) > cosine(taste.vector, fps.get('xmas2')!));
+});
+
+test('bandit: topics you keep skipping fade away', () => {
+  const s = empty();
+  for (const id of ['xmas1', 'xmas2']) s.watch[id] = addView(addView(undefined, 300, 6, NOW - H), 300, 6, NOW - H);
+  let below = 0;
+  for (let i = 0; i < 20; i++) {
+    const parts = new Map(scoreAll(videos, s, { now: NOW, seed: String(i) }).map((x) => [x.video.id, x.parts]));
+    if (parts.get('xmas1')!.discovery < parts.get('ocean1')!.discovery) below++;
+  }
+  assert.ok(below >= 15, `skipped topic scored lower in ${below}/20 runs`);
+});
+
+test('mixing continues smoothly from what was just shown', () => {
+  const s = empty();
+  const order = rankFeed(videos.filter((x) => x.id !== 'hero1'), s, { now: NOW, context: [videos.find((x) => x.id === 'hero1')!] });
+  assert.notEqual(order[0].creatorId, 'nova');
 });

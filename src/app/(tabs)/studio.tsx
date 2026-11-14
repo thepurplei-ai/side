@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Silk from '@/components/Silk';
@@ -8,6 +8,7 @@ import { useDockSpace } from '@/components/Dock';
 import { totalDuration } from '@/ai/director';
 import { Button, EmptyState, timeAgo, Title } from '@/components/ui';
 import { CLIP_COLORS } from '@/data/clipColors';
+import { posterFor } from '@/data/clips';
 import { useStore } from '@/store/AppStore';
 import { colors, radius, space, fonts } from '@/theme';
 import type { Project } from '@/types';
@@ -51,7 +52,12 @@ export default function Studio() {
             return (
               <Pressable style={styles.item} onPress={() => router.push(`/project/${p.id}`)}>
                 <View style={[styles.thumb, { backgroundColor: p.result?.clip ? CLIP_COLORS[p.result.clip] : colors.surface2 }]}>
-                  <Ionicons name={p.status === 'ready' ? 'play' : p.status === 'generating' ? 'hourglass' : 'create-outline'} size={22} color="#fff" />
+                  {p.media?.type === 'image' ? (
+                    <Image source={{ uri: p.media.uri }} style={StyleSheet.absoluteFill} />
+                  ) : posterFor(p.result) !== undefined ? (
+                    <Image source={posterFor(p.result)} style={StyleSheet.absoluteFill} />
+                  ) : null}
+                  <Ionicons style={styles.thumbIcon} name={p.status === 'ready' ? 'play' : p.status === 'generating' ? 'hourglass' : 'create-outline'} size={22} color="#fff" />
                 </View>
                 <View style={{ flex: 1, gap: 2 }}>
                   <Text style={styles.title} numberOfLines={1}>{p.title}</Text>
@@ -85,7 +91,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', gap: space.md, padding: space.sm, borderRadius: radius.lg,
     backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border,
   },
-  thumb: { width: 54, height: 72, borderRadius: radius.sm, alignItems: 'center', justifyContent: 'center' },
+  thumb: { width: 54, height: 72, borderRadius: radius.sm, alignItems: 'center', justifyContent: 'center' , overflow: 'hidden' },
+  thumbIcon: { textShadowColor: 'rgba(0,0,0,0.7)', textShadowRadius: 6 },
   title: { color: colors.text, fontFamily: fonts.heavy, fontSize: 16 },
   meta: { color: colors.textDim, fontSize: 13 },
   badges: { flexDirection: 'row', gap: space.sm, flexWrap: 'wrap' },

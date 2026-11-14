@@ -23,6 +23,7 @@ export default function VideoFeed({
   active = true,
   onRefresh,
   onEndReached,
+  onActiveIndexChange,
 }: {
   items: FeedItem[];
   initialIndex?: number;
@@ -31,6 +32,8 @@ export default function VideoFeed({
   active?: boolean;
   onRefresh?: () => void;
   onEndReached?: () => void;
+  /** Called when a swipe settles on a new video. */
+  onActiveIndexChange?: (index: number) => void;
 }) {
   const [height, setHeight] = useState(0);
   const [activeIndex, setActiveIndex] = useState(initialIndex);
@@ -43,8 +46,11 @@ export default function VideoFeed({
   // Switch videos only when the swipe has settled, so nothing stutters mid-swipe.
   const onSettled = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     if (!height) return;
-    const i = Math.round(e.nativeEvent.contentOffset.y / height);
-    setActiveIndex(Math.max(0, Math.min(items.length - 1, i)));
+    const i = Math.max(0, Math.min(items.length - 1, Math.round(e.nativeEvent.contentOffset.y / height)));
+    if (i !== activeIndex) {
+      setActiveIndex(i);
+      onActiveIndexChange?.(i);
+    }
   };
 
   const getItemLayout = useCallback(

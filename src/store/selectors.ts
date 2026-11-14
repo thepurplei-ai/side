@@ -26,8 +26,9 @@ export function signalsFrom(state: AppState): Signals {
 }
 
 /** "For You": ordered by the feed algorithm (src/ai/recommender.ts). */
-export function forYouFeed(state: AppState, seed: string): Video[] {
-  return rankFeed(publicVideos(state), signalsFrom(state), { now: Date.now(), meId: state.me?.id, seed });
+export function forYouFeed(state: AppState, seed: string, context?: Video[], only?: Set<string>): Video[] {
+  const pool = only ? publicVideos(state).filter((v) => only.has(v.id)) : publicVideos(state);
+  return rankFeed(pool, signalsFrom(state), { now: Date.now(), meId: state.me?.id, seed, context });
 }
 
 /** "Following": newest videos from people you follow. */

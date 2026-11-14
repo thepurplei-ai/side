@@ -12,6 +12,7 @@ import { CLIP_COLORS } from '@/data/clipColors';
 import { TEMPLATES } from '@/data/seed';
 import { type AppState, useStore } from '@/store/AppStore';
 import { followingFeed, forYouFeed } from '@/store/selectors';
+import type { Video } from '@/types';
 import { colors, radius, space, fonts } from '@/theme';
 
 /** In Family Mode the public feed is hidden. Parents see their family's private stories and gentle ideas instead. */
@@ -61,9 +62,14 @@ const PAGES: Page[] = ['following', 'forYou'];
 const MAX_ROUNDS = 20;
 const SWITCH_W = 96;
 
-function makeRound(state: AppState, prevLast?: string): string[] {
-  const ids = forYouFeed(state, `${Date.now()}-${Math.random()}`).map((v) => v.id);
+function newSeed() {
+  return `${Date.now()}-${Math.random()}`;
+}
+
+function makeRound(state: AppState, context: Video[] = []): string[] {
+  const ids = forYouFeed(state, newSeed(), context).map((v) => v.id);
   // Don't show the same video twice in a row where one round ends and the next starts.
+  const prevLast = context[context.length - 1]?.id;
   if (ids.length > 1 && ids[0] === prevLast) ids.push(ids.shift()!);
   return ids;
 }
@@ -87,19 +93,36 @@ export default function Home() {
     const v = state.videos.find((x) => x.id === id);
     return v && v.visibility === 'public' && !state.hidden[id] && !state.notInterested[id] ? v : undefined;
   };
-  const forYouItems: FeedItem[] = rounds.flatMap((ids, r) =>
-    ids.flatMap((id) => {
+  const flat = rounds.flatMap((ids, r) =>
+    ids.flatMap((id, pos) => {
       const v = visible(id);
-      return v ? [{ key: `${r}-${id}`, video: v }] : [];
+      return v ? [{ key: `${r}-${id}`, video: v, r, pos }] : [];
     }),
   );
+  const forYouItems: FeedItem[] = flat;
+
+  // Live adapting: after every swipe, the videos you haven't reached yet in this round are ranked
+  // again with everything you just did. The very next video stays put (it's already loaded).
+  const onSwipe = (i: number) => {
+    const next = flat[i + 1];
+    if (!next) return;
+    const round = rounds[next.r];
+    const keep = round.slice(0, next.pos + 1);
+    const rest = round.slice(next.pos + 1);
+    if (rest.length < 2) return;
+    const context = flat.slice(Math.max(0, i - 1), i + 2).map((x) => x.video);
+    const reranked = forYouFeed(state, newSeed(), context, new Set(rest)).map((v) => v.id);
+    const missing = rest.filter((id) => !reranked.includes(id)); // e.g. hidden: keep them at the end
+    const updated = [...rounds];
+    updated[next.r] = [...keep, ...reranked, ...missing];
+    setRounds(updated);
+  };
   const followingItems: FeedItem[] = followingFeed(state).map((v) => ({ key: v.id, video: v }));
 
   const refresh = () => setRounds([makeRound(state)]);
   const more = () => {
     if (rounds.length >= MAX_ROUNDS) return;
-    const last = rounds[rounds.length - 1];
-    setRounds([...rounds, makeRound(state, last[last.length - 1])]);
+    setRounds([...rounds, makeRound(state, flat.slice(-3).map((x) => x.video))]);
   };
 
   const goTo = (p: Page) => {
@@ -130,7 +153,7 @@ export default function Home() {
           <View style={{ width, height: pageHeight }}>
             {item === 'forYou' ? (
               forYouItems.length > 0 ? (
-                <VideoFeed items={forYouItems} active={page === 'forYou'} onRefresh={refresh} onEndReached={more} bottomInset={dockSpace} />
+                <VideoFeed items={forYouItems} active={page === 'forYou'} onRefresh={refresh} onEndReached={more} onActiveIndexChange={onSwipe} bottomInset={dockSpace} />
               ) : (
                 <EmptyState icon="sparkles-outline" title="Nothing new right now" text="Be the first to create something!" action={<Button title="Create" onPress={() => router.push('/create')} />} />
               )

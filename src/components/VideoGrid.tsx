@@ -1,9 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { compactNumber } from '@/components/ui';
 import { CLIP_COLORS } from '@/data/clipColors';
+import { posterFor } from '@/data/clips';
 import { colors, radius, fonts } from '@/theme';
 import type { Video } from '@/types';
 
@@ -17,6 +19,8 @@ export default function VideoGrid({ videos, listKey }: { videos: Video[]; listKe
           style={styles.tile}
           onPress={() => router.push({ pathname: '/video/[id]', params: { id: v.id, list: listKey, index: String(i) } })}>
           <View style={[StyleSheet.absoluteFill, { backgroundColor: CLIP_COLORS[v.source.clip ?? 'fantasy'] }]} />
+          {posterFor(v.source) !== undefined && <Image source={posterFor(v.source)} style={StyleSheet.absoluteFill} resizeMode="cover" />}
+          <LinearGradient colors={['rgba(0,0,0,0.45)', 'transparent', 'rgba(0,0,0,0.55)']} style={StyleSheet.absoluteFill} />
           <Text style={styles.tileTitle} numberOfLines={3}>{v.title}</Text>
           <View style={styles.tileFooter}>
             <Ionicons name="heart" size={12} color="#fff" />

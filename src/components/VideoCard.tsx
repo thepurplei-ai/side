@@ -9,7 +9,7 @@ import { Alert, Animated, Image, Pressable, Share, StyleSheet, Text, View } from
 
 import { Avatar, compactNumber, IconName } from '@/components/ui';
 import { CLIP_COLORS } from '@/data/clipColors';
-import { toVideoSource } from '@/data/clips';
+import { posterFor, toVideoSource } from '@/data/clips';
 import { newId, useStore, useUser } from '@/store/AppStore';
 import { colors, radius, space, fonts } from '@/theme';
 import type { Video } from '@/types';
@@ -79,6 +79,21 @@ export default function VideoCard({
 
   // Double-tap to like, with a heart that pops up. A single tap pauses.
   const [heart] = useState(() => new Animated.Value(0));
+
+  // Graphics: the cover picture shows at once and fades away when the first video frame is ready,
+  // so there is never a black flash. The ticket panel glides in when the video comes on screen.
+  const poster = posterFor(video.source);
+  const [cover] = useState(() => new Animated.Value(1));
+  const [enter] = useState(() => new Animated.Value(active ? 1 : 0));
+  const loaded = preload || active;
+  useEffect(() => {
+    if (!loaded) cover.setValue(1);
+  }, [loaded, cover]);
+  useEffect(() => {
+    if (active) Animated.spring(enter, { toValue: 1, useNativeDriver: true, friction: 8, tension: 60 }).start();
+    else enter.setValue(0);
+  }, [active, enter]);
+  const onFirstFrame = () => Animated.timing(cover, { toValue: 0, duration: 260, useNativeDriver: true }).start();
   const lastTap = useRef(0);
   const tapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const onTap = () => {
@@ -152,7 +167,10 @@ export default function VideoCard({
   return (
     <View style={{ height, backgroundColor: CLIP_COLORS[video.source.clip ?? 'fantasy'] }}>
       <Pressable style={StyleSheet.absoluteFill} onPress={onTap} onLongPress={more}>
-        <VideoView player={player} style={StyleSheet.absoluteFill} contentFit="cover" nativeControls={false} />
+        <VideoView player={player} style={StyleSheet.absoluteFill} contentFit="cover" nativeControls={false} onFirstFrameRender={onFirstFrame} />
+        {poster !== undefined && (
+          <Animated.Image source={poster} resizeMode="cover" pointerEvents="none" style={[StyleSheet.absoluteFill, { opacity: cover }]} />
+        )}
         {video.castUri && (
           <View style={styles.cast}>
             <Image source={{ uri: video.castUri }} style={styles.castImage} />
@@ -177,7 +195,15 @@ export default function VideoCard({
       <LinearGradient colors={['transparent', 'rgba(26,15,46,0.85)']} style={styles.bottomShade} pointerEvents="none" />
 
       {/* The "ticket": Side's info panel for every video. */}
-      <View style={[styles.ticket, { bottom: bottomInset + 10 }]}>
+      <Animated.View
+        style={[
+          styles.ticket,
+          {
+            bottom: bottomInset + 10,
+            opacity: enter.interpolate({ inputRange: [0, 1], outputRange: [0.5, 1] }),
+            transform: [{ translateY: enter.interpolate({ inputRange: [0, 1], outputRange: [18, 0] }) }],
+          },
+        ]}>
         {/* Ticket stub sticking out of the top of the panel. */}
         {video.remixAllowed && !isMe ? (
           <Pressable style={styles.remixButton} onPress={() => router.push({ pathname: '/camera', params: { remixOf: video.id } })}>
@@ -222,7 +248,7 @@ export default function VideoCard({
           <Action icon={saved ? 'bookmark' : 'bookmark-outline'} color={saved ? colors.primary : colors.text} onPress={() => dispatch({ type: 'toggleSave', videoId: video.id })} />
           <Action icon="paper-plane-outline" label={compactNumber(video.shares)} onPress={share} />
         </View>
-      </View>
+      </Animated.View>
     </View>
   );
 }

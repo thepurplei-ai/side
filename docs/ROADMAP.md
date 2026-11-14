@@ -18,6 +18,9 @@
 - Version 3: own design ("Midnight Cinema": night-blue and gold (now violet), serif titles, floating dock,
   ticket panel on videos); the camera button opens Side's own camera (photo or video, flip,
   light, gallery, or write an idea).
+- Version 4: smarter For You (video fingerprints, short- and long-term taste, topic bandit,
+  variety mixing, live re-ranking after each swipe); sharper demo videos, cover pictures,
+  fade-in without black flashes, gliding info panel; purple silk background.
 
 Everything is saved on the phone. Video generation is in **preview mode** (sample clips).
 
