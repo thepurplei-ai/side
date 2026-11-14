@@ -24,7 +24,7 @@ them short. Never ask the owner to run terminal commands: run them yourself.
 - Plain "Your own idea" card (`src/components/OwnIdeaCard.tsx`) opens a blank Create (`fresh` param).
 - Demo clips 720x1280 + cover pictures (`assets/posters`) made by `scripts/make-sample-videos.sh`.
 - Look: "Deep Ocean" (`src/theme.ts`): deep sea-blue backdrop (`src/components/Backdrop.tsx`, add it to every new tab screen), aquamarine buttons, a warm coral `highlight` for small touches, off-white text, Fraunces serif titles + Manrope.
-  Floating dock menu (`src/components/Dock.tsx`) with a violet camera shutter that opens `src/app/camera.tsx`.
+  Floating dock menu (`src/components/Dock.tsx`) with an aquamarine camera shutter that opens `src/app/camera.tsx`.
   Videos show a "ticket" info panel and a coral progress line, not a side icon rail.
 - Home: videos slide sideways (left = next), one per swipe. Phones use the native page swiper
   (`src/components/VideoFeed.tsx`, react-native-pager-view) with a black veil so nothing of the next clip
