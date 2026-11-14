@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useRef, useState } from 'react';
-import { Animated, FlatList, Image, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { useState } from 'react';
+import { Animated, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Silk from '@/components/Silk';
@@ -76,15 +76,13 @@ function makeRound(state: AppState, context: Video[] = []): string[] {
 
 export default function Home() {
   const { state } = useStore();
-  const { width } = useWindowDimensions();
-  const [pageHeight, setPageHeight] = useState(0);
   const dockSpace = useDockSpace();
   const [page, setPage] = useState<Page>('forYou');
-  const pagerRef = useRef<FlatList<Page>>(null);
-  const [scrollX] = useState(() => new Animated.Value(width));
+  const [thumb] = useState(() => new Animated.Value(1));
+  const [refreshCount, setRefreshCount] = useState(0);
 
-  // "For You" order is fixed until you pull down to refresh, so videos don't jump around while
-  // you watch. When you near the end, another round is added, so the feed keeps going.
+  // "For You" order is fixed until you refresh (tap "For You" again), so videos don't jump around
+  // while you watch. When you near the end, another round is added, so the feed keeps going.
   const [rounds, setRounds] = useState<string[][]>(() => [makeRound(state)]);
 
   if (state.family.enabled) return <FamilyHome />;
@@ -119,61 +117,47 @@ export default function Home() {
   };
   const followingItems: FeedItem[] = followingFeed(state).map((v) => ({ key: v.id, video: v }));
 
-  const refresh = () => setRounds([makeRound(state)]);
+  const refresh = () => {
+    setRounds([makeRound(state)]);
+    setRefreshCount((n) => n + 1);
+  };
   const more = () => {
     if (rounds.length >= MAX_ROUNDS) return;
     setRounds([...rounds, makeRound(state, flat.slice(-3).map((x) => x.video))]);
   };
 
+  // Tap to switch between Following and For You. Tapping "For You" again gives a fresh order.
   const goTo = (p: Page) => {
-    pagerRef.current?.scrollToIndex({ index: PAGES.indexOf(p), animated: true });
+    if (p === page) {
+      if (p === 'forYou') refresh();
+      return;
+    }
     setPage(p);
+    Animated.spring(thumb, { toValue: PAGES.indexOf(p), useNativeDriver: true, friction: 9, tension: 80 }).start();
   };
 
-  const thumbX = scrollX.interpolate({ inputRange: [0, width], outputRange: [0, SWITCH_W], extrapolate: 'clamp' });
+  const thumbX = thumb.interpolate({ inputRange: [0, 1], outputRange: [0, SWITCH_W] });
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#000' }} onLayout={(e) => setPageHeight(Math.round(e.nativeEvent.layout.height))}>
-      {pageHeight > 0 && (
-      <Animated.FlatList
-        ref={pagerRef}
-        data={PAGES}
-        keyExtractor={(p) => p}
-        horizontal
-        pagingEnabled
-        decelerationRate="fast"
-        overScrollMode="never"
-        showsHorizontalScrollIndicator={false}
-        initialScrollIndex={1}
-        getItemLayout={(_, index) => ({ length: width, offset: width * index, index })}
-        onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], { useNativeDriver: true })}
-        scrollEventThrottle={16}
-        onMomentumScrollEnd={(e) => setPage(PAGES[Math.round(e.nativeEvent.contentOffset.x / width)] ?? 'forYou')}
-        renderItem={({ item }) => (
-          <View style={{ width, height: pageHeight }}>
-            {item === 'forYou' ? (
-              forYouItems.length > 0 ? (
-                <VideoFeed items={forYouItems} active={page === 'forYou'} onRefresh={refresh} onEndReached={more} onActiveIndexChange={onSwipe} bottomInset={dockSpace} />
-              ) : (
-                <EmptyState icon="sparkles-outline" title="Nothing new right now" text="Be the first to create something!" action={<Button title="Create" onPress={() => router.push('/create')} />} />
-              )
-            ) : followingItems.length > 0 ? (
-              <VideoFeed items={followingItems} active={page === 'following'} bottomInset={dockSpace} />
-            ) : (
-              <EmptyState
-                icon="people-outline"
-                title="No videos here yet"
-                text="Follow creators to see their newest videos here. Swipe left to go back to For You."
-                action={<Button title="Discover creators" onPress={() => router.push('/discover')} />}
-              />
-            )}
-          </View>
-        )}
-      />
+    <View style={{ flex: 1, backgroundColor: '#000' }}>
+      {page === 'forYou' ? (
+        forYouItems.length > 0 ? (
+          <VideoFeed key={`forYou-${refreshCount}`} items={forYouItems} onEndReached={more} onActiveIndexChange={onSwipe} bottomInset={dockSpace} />
+        ) : (
+          <EmptyState icon="sparkles-outline" title="Nothing new right now" text="Be the first to create something!" action={<Button title="Open the camera" onPress={() => router.push('/camera')} />} />
+        )
+      ) : followingItems.length > 0 ? (
+        <VideoFeed key="following" items={followingItems} bottomInset={dockSpace} />
+      ) : (
+        <EmptyState
+          icon="people-outline"
+          title="No videos here yet"
+          text="Follow creators to see their newest videos here."
+          action={<Button title="Discover creators" onPress={() => router.push('/discover')} />}
+        />
       )}
       <SafeAreaView edges={['top']} style={styles.topBar} pointerEvents="box-none">
         <Image source={require('../../../assets/images/logo.png')} style={styles.logo} accessibilityLabel="side" />
-        {/* Sliding switch: follows your finger as you swipe sideways. */}
         <View style={styles.switch}>
           <Animated.View style={[styles.switchThumb, { transform: [{ translateX: thumbX }] }]} />
           {PAGES.map((p) => (

@@ -1,52 +1,49 @@
 import { useIsFocused } from 'expo-router';
-import { useCallback, useRef, useState } from 'react';
-import { FlatList, LayoutChangeEvent, NativeScrollEvent, NativeSyntheticEvent, RefreshControl, View } from 'react-native';
+import { useCallback, useState } from 'react';
+import { FlatList, LayoutChangeEvent, NativeScrollEvent, NativeSyntheticEvent, View } from 'react-native';
 
 import VideoCard from '@/components/VideoCard';
-import { colors } from '@/theme';
 import type { Video } from '@/types';
 
 export interface FeedItem {
-  /** Unique key: the same video can appear again further down an endless feed. */
+  /** Unique key: the same video can appear again later in an endless feed. */
   key: string;
   video: Video;
 }
 
 /**
- * Full-screen vertical feed: one swipe = exactly one video.
- * The next and previous videos are already loaded, so they start instantly.
+ * Full-screen sideways feed: swipe left for the next video, right for the previous one.
+ * One swipe = exactly one video. The neighbours are already loaded, so they start instantly.
  */
 export default function VideoFeed({
   items,
   initialIndex = 0,
   bottomInset = 0,
   active = true,
-  onRefresh,
   onEndReached,
   onActiveIndexChange,
 }: {
   items: FeedItem[];
   initialIndex?: number;
   bottomInset?: number;
-  /** False when this feed is not the one on screen (for example the other Home page). */
+  /** False when this feed is not on screen. */
   active?: boolean;
-  onRefresh?: () => void;
   onEndReached?: () => void;
   /** Called when a swipe settles on a new video. */
   onActiveIndexChange?: (index: number) => void;
 }) {
-  const [height, setHeight] = useState(0);
+  const [size, setSize] = useState({ width: 0, height: 0 });
   const [activeIndex, setActiveIndex] = useState(initialIndex);
-  const [refreshing, setRefreshing] = useState(false);
-  const listRef = useRef<FlatList<FeedItem>>(null);
   const focused = useIsFocused();
+  const { width, height } = size;
 
-  const onLayout = (e: LayoutChangeEvent) => setHeight(Math.round(e.nativeEvent.layout.height));
+  const onLayout = (e: LayoutChangeEvent) =>
+    setSize({ width: Math.round(e.nativeEvent.layout.width), height: Math.round(e.nativeEvent.layout.height) });
 
   // Switch videos only when the swipe has settled, so nothing stutters mid-swipe.
   const onSettled = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    if (!height) return;
-    const i = Math.max(0, Math.min(items.length - 1, Math.round(e.nativeEvent.contentOffset.y / height)));
+    if (!width) return;
+    const i = Math.max(0, Math.min(items.length - 1, Math.round(e.nativeEvent.contentOffset.x / width)));
     if (i !== activeIndex) {
       setActiveIndex(i);
       onActiveIndexChange?.(i);
@@ -54,29 +51,21 @@ export default function VideoFeed({
   };
 
   const getItemLayout = useCallback(
-    (_: unknown, index: number) => ({ length: height, offset: height * index, index }),
-    [height],
+    (_: unknown, index: number) => ({ length: width, offset: width * index, index }),
+    [width],
   );
-
-  const refresh = () => {
-    if (!onRefresh) return;
-    setRefreshing(true);
-    onRefresh();
-    setActiveIndex(0);
-    listRef.current?.scrollToOffset({ offset: 0, animated: false });
-    setTimeout(() => setRefreshing(false), 400);
-  };
 
   return (
     <View style={{ flex: 1, backgroundColor: '#000' }} onLayout={onLayout}>
-      {height > 0 && (
+      {width > 0 && height > 0 && (
         <FlatList
-          ref={listRef}
           data={items}
+          horizontal
           keyExtractor={(it) => it.key}
           renderItem={({ item, index }) => (
             <VideoCard
               video={item.video}
+              width={width}
               height={height}
               active={active && focused && index === activeIndex}
               // Keep the neighbours ready (loaded and paused) for an instant start.
@@ -84,12 +73,13 @@ export default function VideoFeed({
               bottomInset={bottomInset}
             />
           )}
-          snapToInterval={height}
+          pagingEnabled
+          snapToInterval={width}
           snapToAlignment="start"
           decelerationRate="fast"
           disableIntervalMomentum
           overScrollMode="never"
-          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
           initialScrollIndex={Math.min(initialIndex, Math.max(0, items.length - 1))}
           getItemLayout={getItemLayout}
           onMomentumScrollEnd={onSettled}
@@ -99,9 +89,6 @@ export default function VideoFeed({
           removeClippedSubviews={false}
           onEndReached={onEndReached}
           onEndReachedThreshold={2}
-          refreshControl={
-            onRefresh ? <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor="#fff" colors={[colors.primary]} progressViewOffset={60} /> : undefined
-          }
         />
       )}
     </View>

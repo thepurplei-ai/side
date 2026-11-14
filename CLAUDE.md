@@ -19,7 +19,7 @@ them short. Never ask the owner to run terminal commands: run them yourself.
 - Look: "Purple Silk" (`src/theme.ts`): dark purple silk background (`src/components/Silk.tsx`, add it to every new tab screen), electric violet, a little lemon for highlights, cream, Fraunces serif titles + Manrope.
   Floating dock menu (`src/components/Dock.tsx`) with a violet camera shutter that opens `src/app/camera.tsx`.
   Videos show a "ticket" info panel and a lemon progress line, not a side icon rail.
-- Home is a sideways pager (Following ⇄ For You); each page is a vertical feed (`src/components/VideoFeed.tsx`).
+- Home: videos slide sideways (left = next), one per swipe (`src/components/VideoFeed.tsx`). Following / For You is a tap switch; tapping For You again refreshes.
 - `src/ai/generator.ts`: `VideoGenerator` interface. `PreviewGenerator` returns sample clips until a real
   AI video service is connected. Screens only use the interface.
 - `src/services/moderation.ts`: on-phone safety checks (pure TS). Tested.

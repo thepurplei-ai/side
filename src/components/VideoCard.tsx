@@ -43,8 +43,8 @@ function Progress({ player, active }: { player: ReturnType<typeof useVideoPlayer
 }
 
 export default function VideoCard({
-  video, active, height, bottomInset = 0, preload = true,
-}: { video: Video; active: boolean; height: number; bottomInset?: number; preload?: boolean }) {
+  video, active, width, height, bottomInset = 0, preload = true,
+}: { video: Video; active: boolean; width?: number; height: number; bottomInset?: number; preload?: boolean }) {
   const { state, dispatch } = useStore();
   const creator = useUser(video.creatorId);
   const original = state.videos.find((v) => v.id === video.remixOfId);
@@ -165,7 +165,7 @@ export default function VideoCard({
   };
 
   return (
-    <View style={{ height, backgroundColor: CLIP_COLORS[video.source.clip ?? 'fantasy'] }}>
+    <View style={{ width, height, backgroundColor: CLIP_COLORS[video.source.clip ?? 'fantasy'] }}>
       <Pressable style={StyleSheet.absoluteFill} onPress={onTap} onLongPress={more}>
         <VideoView player={player} style={StyleSheet.absoluteFill} contentFit="cover" nativeControls={false} onFirstFrameRender={onFirstFrame} />
         {poster !== undefined && (
