@@ -6,7 +6,26 @@ export type ClipKey = 'hero' | 'mars' | 'christmas' | 'fantasy' | 'ocean' | 'cit
 /** Where a video's picture comes from: a built-in clip or a file on the phone / in the cloud. */
 export interface MediaSource {
   clip?: ClipKey;
+  /** A photo or video saved on the phone (in side's own folder). */
   uri?: string;
+  /** For files from the phone: is it a photo or a video? (Built-in clips are always videos.) */
+  type?: 'image' | 'video';
+  /** Cover picture for a video from the phone. */
+  posterUri?: string;
+  /** Wide videos are shown whole (with soft edges) instead of cropped. */
+  orientation?: 'portrait' | 'landscape' | 'square';
+  durationSec?: number;
+}
+
+/** A photo or video that has been checked and saved, ready to post or to use with AI. */
+export interface ImportedMedia {
+  uri: string;
+  type: 'image' | 'video';
+  posterUri?: string;
+  durationSec?: number;
+  width?: number;
+  height?: number;
+  orientation: 'portrait' | 'landscape' | 'square';
 }
 
 export type Visibility = 'public' | 'followers' | 'private';

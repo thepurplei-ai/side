@@ -30,9 +30,13 @@ const POSTERS: Record<ClipKey, number> = {
   forest: require('../../assets/posters/forest.jpg'),
 };
 
-/** The cover picture for a video, or undefined for a video from the phone. */
-export function posterFor(source: MediaSource | undefined): number | undefined {
-  if (!source || source.uri) return undefined;
+/** The cover picture for a clip: built-in poster, the photo itself, or a video's saved cover. */
+export function posterFor(source: MediaSource | undefined): number | { uri: string } | undefined {
+  if (!source) return undefined;
+  if (source.uri) {
+    if (source.type === 'image') return { uri: source.uri };
+    return source.posterUri ? { uri: source.posterUri } : undefined;
+  }
   return POSTERS[source.clip ?? 'fantasy'];
 }
 
@@ -41,6 +45,7 @@ export function posterForClip(clip: ClipKey): number {
 }
 
 export function toVideoSource(source: MediaSource): VideoSource {
+  if (source.type === 'image') return null; // photos are shown as pictures, not played
   if (source.uri) return { uri: source.uri };
   return CLIPS[source.clip ?? 'fantasy'];
 }

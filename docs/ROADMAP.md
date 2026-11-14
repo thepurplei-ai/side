@@ -24,6 +24,8 @@
 - Version 5: videos slide sideways; "clips" not movies; plain "Your own idea" card; profile
   algorithm (Top/Latest/Most remixed, pins, insights and levels, taste match, similar creators);
   10 creators and 18 clips. Next: real stock footage (needs network approval) and real accounts.
+- Version 6: post your own photos and videos as clips (camera preview, checks, saved copies, cover
+  pictures, captions and #tags); fixed camera hand-over and sideways paging drift.
 
 Everything is saved on the phone. Video generation is in **preview mode** (sample clips).
 

@@ -7,7 +7,15 @@ import { createContext, ReactNode, useContext, useEffect, useMemo, useReducer } 
 
 import { addView, type WatchStat } from '@/ai/recommender';
 import { SEED_COMMENTS, SEED_USERS, SEED_VIDEOS } from '@/data/seed';
-import type { ChildProfile, Comment, FamilySettings, Project, Report, User, Video } from '@/types';
+import type { ChildProfile, Comment, FamilySettings, ImportedMedia, Project, Report, User, Video } from '@/types';
+
+/** A photo/video handed from the camera to the Create screen (not saved between app starts). */
+export interface Draft {
+  id: string;
+  media: ImportedMedia;
+  remixOf?: string;
+  template?: string;
+}
 
 const STORAGE_KEY = 'side.state.v1';
 
@@ -30,6 +38,7 @@ export interface AppState {
   /** Your clips pinned to the top of your profile (up to 3). */
   pinned: Record<string, true>;
   projects: Project[];
+  draft?: Draft;
   family: FamilySettings;
   reports: Report[];
 }
@@ -65,6 +74,7 @@ export type Action =
   | { type: 'recordView'; videoId: string; watchedMs: number; durationSec: number }
   | { type: 'notInterested'; videoId: string }
   | { type: 'togglePin'; videoId: string }
+  | { type: 'setDraft'; draft: Draft | undefined }
   | { type: 'addComment'; comment: Comment }
   | { type: 'deleteComment'; commentId: string }
   | { type: 'report'; report: Report }
@@ -115,6 +125,8 @@ function reducer(state: AppState, action: Action): AppState {
     }
     case 'recordView':
       return { ...state, watch: { ...state.watch, [action.videoId]: addView(state.watch[action.videoId], action.watchedMs, action.durationSec, Date.now()) } };
+    case 'setDraft':
+      return { ...state, draft: action.draft };
     case 'togglePin': {
       if (!state.pinned[action.videoId] && Object.keys(state.pinned).length >= 3) return state;
       return { ...state, pinned: toggle(state.pinned, action.videoId) };

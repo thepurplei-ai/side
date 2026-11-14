@@ -17,6 +17,10 @@ them short. Never ask the owner to run terminal commands: run them yourself.
   MMR mixing. Home re-ranks unseen videos after every swipe. Pure TS. Tested.
 - `src/ai/profile.ts`: the profile algorithm: Top / Latest / Most remixed clip order with pins, creator
   insights and level, "known for" topics, taste match %, People you may like / Similar creators. Tested.
+- Media pipeline: `src/services/media.ts` (check → copy into app folder → video cover picture) with rules in
+  `src/services/mediaRules.ts` (tested). Camera (`src/app/camera.tsx`) shows Retake / Use it, then hands the
+  media to Create via `state.draft` (not URL params). Create can "Post as it is" (your own clip) or
+  "Transform with AI". Photo posts show with a slow zoom; wide videos are shown whole on a blurred copy.
 - Plain "Your own idea" card (`src/components/OwnIdeaCard.tsx`) opens a blank Create (`fresh` param).
 - Demo clips 720x1280 + cover pictures (`assets/posters`) made by `scripts/make-sample-videos.sh`.
 - Look: "Purple Silk" (`src/theme.ts`): dark purple silk background (`src/components/Silk.tsx`, add it to every new tab screen), electric violet, a little lemon for highlights, cream, Fraunces serif titles + Manrope.

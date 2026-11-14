@@ -37,8 +37,12 @@ export default function VideoFeed({
   const focused = useIsFocused();
   const { width, height } = size;
 
-  const onLayout = (e: LayoutChangeEvent) =>
-    setSize({ width: Math.round(e.nativeEvent.layout.width), height: Math.round(e.nativeEvent.layout.height) });
+  // Use the exact size (no rounding): rounding made pages drift a little more with every swipe
+  // on phones whose screen width isn't a whole number of points.
+  const onLayout = (e: LayoutChangeEvent) => {
+    const { width: w, height: h } = e.nativeEvent.layout;
+    if (Math.abs(w - width) > 0.01 || Math.abs(h - height) > 0.01) setSize({ width: w, height: h });
+  };
 
   // Switch videos only when the swipe has settled, so nothing stutters mid-swipe.
   const onSettled = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -73,12 +77,13 @@ export default function VideoFeed({
               bottomInset={bottomInset}
             />
           )}
+          // One page = the full width: the phone's own paging does the snapping.
           pagingEnabled
-          snapToInterval={width}
-          snapToAlignment="start"
           decelerationRate="fast"
-          disableIntervalMomentum
           overScrollMode="never"
+          bounces={false}
+          directionalLockEnabled
+          nestedScrollEnabled
           showsHorizontalScrollIndicator={false}
           initialScrollIndex={Math.min(initialIndex, Math.max(0, items.length - 1))}
           getItemLayout={getItemLayout}

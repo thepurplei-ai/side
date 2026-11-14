@@ -29,7 +29,10 @@ export function signalsFrom(state: AppState): Signals {
 /** "For You": ordered by the feed algorithm (src/ai/recommender.ts). */
 export function forYouFeed(state: AppState, seed: string, context?: Video[], only?: Set<string>): Video[] {
   const pool = only ? publicVideos(state).filter((v) => only.has(v.id)) : publicVideos(state);
-  return rankFeed(pool, signalsFrom(state), { now: Date.now(), meId: state.me?.id, seed, context });
+  const ranked = rankFeed(pool, signalsFrom(state), { now: Date.now(), meId: state.me?.id, seed, context });
+  // Your own new clips (last 24 hours, not watched yet) open the feed, so you see your post right away.
+  const fresh = ranked.filter((v) => v.creatorId === state.me?.id && !state.watch[v.id] && Date.now() - v.createdAt < 24 * 3600_000);
+  return fresh.length ? [...fresh, ...ranked.filter((v) => !fresh.includes(v))] : ranked;
 }
 
 /** "Following": newest videos from people you follow. */

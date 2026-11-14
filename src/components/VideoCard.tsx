@@ -65,7 +65,7 @@ export default function VideoCard({
   useEffect(() => {
     if (!active) return;
     const start = Date.now();
-    let duration = 6;
+    let duration = video.source.durationSec ?? 6;
     const timer = setTimeout(() => {
       try {
         if (player.duration > 0) duration = player.duration;
@@ -75,7 +75,7 @@ export default function VideoCard({
       clearTimeout(timer);
       dispatch({ type: 'recordView', videoId: video.id, watchedMs: Date.now() - start, durationSec: duration });
     };
-  }, [active, video.id, player, dispatch]);
+  }, [active, video.id, video.source.durationSec, player, dispatch]);
 
   // Double-tap to like, with a heart that pops up. A single tap pauses.
   const [heart] = useState(() => new Animated.Value(0));
@@ -83,6 +83,19 @@ export default function VideoCard({
   // Graphics: the cover picture shows at once and fades away when the first video frame is ready,
   // so there is never a black flash. The ticket panel glides in when the video comes on screen.
   const poster = posterFor(video.source);
+  const isPhoto = video.source.type === 'image';
+  // Wide (landscape) clips are shown whole, on a soft blurred copy of themselves.
+  const wide = video.source.orientation === 'landscape';
+  const [zoom] = useState(() => new Animated.Value(0));
+  useEffect(() => {
+    if (!isPhoto) return;
+    if (active) {
+      zoom.setValue(0);
+      const anim = Animated.timing(zoom, { toValue: 1, duration: 8000, useNativeDriver: true });
+      anim.start();
+      return () => anim.stop();
+    }
+  }, [active, isPhoto, zoom]);
   const [cover] = useState(() => new Animated.Value(1));
   const [enter] = useState(() => new Animated.Value(active ? 1 : 0));
   const loaded = preload || active;
@@ -167,8 +180,20 @@ export default function VideoCard({
   return (
     <View style={{ width, height, backgroundColor: CLIP_COLORS[video.source.clip ?? 'fantasy'] }}>
       <Pressable style={StyleSheet.absoluteFill} onPress={onTap} onLongPress={more}>
-        <VideoView player={player} style={StyleSheet.absoluteFill} contentFit="cover" nativeControls={false} onFirstFrameRender={onFirstFrame} />
-        {poster !== undefined && (
+        {isPhoto ? (
+          // A photo post: shown full screen with a slow, gentle zoom.
+          <Animated.Image
+            source={poster!}
+            resizeMode={wide ? 'contain' : 'cover'}
+            style={[StyleSheet.absoluteFill, { transform: [{ scale: zoom.interpolate({ inputRange: [0, 1], outputRange: [1, 1.08] }) }] }]}
+          />
+        ) : (
+          <>
+            {wide && poster !== undefined && <Image source={poster} blurRadius={30} resizeMode="cover" style={StyleSheet.absoluteFill} />}
+            <VideoView player={player} style={StyleSheet.absoluteFill} contentFit={wide ? 'contain' : 'cover'} nativeControls={false} onFirstFrameRender={onFirstFrame} />
+          </>
+        )}
+        {!isPhoto && poster !== undefined && !wide && (
           <Animated.Image source={poster} resizeMode="cover" pointerEvents="none" style={[StyleSheet.absoluteFill, { opacity: cover }]} />
         )}
         {video.castUri && (
@@ -191,7 +216,7 @@ export default function VideoCard({
         )}
       </Pressable>
 
-      <Progress player={player} active={active} />
+      {!isPhoto && <Progress player={player} active={active} />}
       <LinearGradient colors={['transparent', 'rgba(26,15,46,0.85)']} style={styles.bottomShade} pointerEvents="none" />
 
       {/* The "ticket": Side's info panel for every video. */}
