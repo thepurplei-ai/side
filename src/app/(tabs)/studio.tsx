@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import Silk from '@/components/Silk';
 import { useDockSpace } from '@/components/Dock';
 import { totalDuration } from '@/ai/director';
 import { Button, EmptyState, timeAgo, Title } from '@/components/ui';
@@ -27,6 +28,7 @@ export default function Studio() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+      <Silk />
       <View style={styles.header}>
         <Title>Studio</Title>
         <Text style={styles.count}>{projects.length} {projects.length === 1 ? 'project' : 'projects'}</Text>

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import Silk from '@/components/Silk';
 import { useDockSpace } from '@/components/Dock';
 import { Avatar, Body, Button, compactNumber, Title } from '@/components/ui';
 import VideoGrid from '@/components/VideoGrid';
@@ -26,6 +27,7 @@ export default function Discover() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+      <Silk />
       <ScrollView contentContainerStyle={{ padding: space.md, gap: space.md, paddingBottom: dockSpace + space.lg }} keyboardShouldPersistTaps="handled">
         <Title>Discover</Title>
 

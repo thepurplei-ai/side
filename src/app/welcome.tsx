@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Body, Button, Label, Notice } from '@/components/ui';
 import { checkText } from '@/services/moderation';
 import { newId, useStore } from '@/store/AppStore';
-import { colors, radius, space, fonts } from '@/theme';
+import { colors, radius, space, fonts, silk } from '@/theme';
 
 const AVATAR_COLORS = ['#FF3D7F', '#8B5CF6', '#38BDF8', '#F59E0B', '#34D399', '#F87171'];
 
@@ -52,7 +52,7 @@ export default function Welcome() {
   };
 
   return (
-    <LinearGradient colors={['#251E3D', colors.bg, colors.bg]} style={{ flex: 1 }}>
+    <LinearGradient colors={silk.colors} locations={silk.locations} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flex: 1 }}>
       <SafeAreaView style={{ flex: 1 }}>
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
           <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">

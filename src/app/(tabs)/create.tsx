@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import Silk from '@/components/Silk';
 import { useDockSpace } from '@/components/Dock';
 import { Body, Button, Chip, Label, Notice, Title } from '@/components/ui';
 import { planFromPrompt, STYLES } from '@/ai/director';
@@ -127,6 +128,7 @@ export default function Create() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+      <Silk />
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={[styles.container, { paddingBottom: dockSpace + space.lg }]} keyboardShouldPersistTaps="handled">
           <View style={styles.header}>

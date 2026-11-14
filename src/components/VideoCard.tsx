@@ -27,7 +27,7 @@ function Action({ icon, label, onPress, color = colors.text }: { icon: IconName;
   );
 }
 
-/** Thin violet line at the top that fills up as the video plays. */
+/** Thin lemon line at the top that fills up as the video plays. */
 function Progress({ player, active }: { player: ReturnType<typeof useVideoPlayer>; active: boolean }) {
   const { currentTime } = useEvent(player, 'timeUpdate', { currentTime: 0, currentLiveTimestamp: null, currentOffsetFromLive: null, bufferedPosition: 0 });
   let duration = 0;
@@ -174,7 +174,7 @@ export default function VideoCard({
       </Pressable>
 
       <Progress player={player} active={active} />
-      <LinearGradient colors={['transparent', 'rgba(14,12,20,0.85)']} style={styles.bottomShade} pointerEvents="none" />
+      <LinearGradient colors={['transparent', 'rgba(26,15,46,0.85)']} style={styles.bottomShade} pointerEvents="none" />
 
       {/* The "ticket": Side's info panel for every video. */}
       <View style={[styles.ticket, { bottom: bottomInset + 10 }]}>
@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
     borderColor: colors.glassBorder, alignItems: 'center', justifyContent: 'center', paddingLeft: 6,
   },
   progressTrack: { position: 'absolute', top: 0, left: 0, right: 0, height: 3, backgroundColor: 'rgba(247,240,227,0.15)' },
-  progressFill: { height: 3, backgroundColor: colors.primary },
+  progressFill: { height: 3, backgroundColor: colors.lemon },
   ticket: {
     position: 'absolute', left: 12, right: 12, padding: space.md, paddingTop: 18, paddingBottom: 12, gap: 6,
     backgroundColor: colors.glass, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.glassBorder,
@@ -267,6 +267,6 @@ const styles = StyleSheet.create({
   },
   noRemixText: { color: colors.textDim, fontFamily: fonts.bold, fontSize: 12 },
   cast: { position: 'absolute', top: 110, left: space.md, alignItems: 'center', gap: 4 },
-  castImage: { width: 72, height: 72, borderRadius: 22, borderWidth: 3, borderColor: colors.primary },
-  castText: { color: colors.primary, fontSize: 10, fontFamily: fonts.heavy, letterSpacing: 1.5 },
+  castImage: { width: 72, height: 72, borderRadius: 22, borderWidth: 3, borderColor: colors.lemon },
+  castText: { color: colors.lemon, fontSize: 10, fontFamily: fonts.heavy, letterSpacing: 1.5 },
 });

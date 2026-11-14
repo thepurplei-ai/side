@@ -1,10 +1,11 @@
 import { Tabs } from 'expo-router';
 
 import Dock from '@/components/Dock';
+import { colors } from '@/theme';
 
 export default function TabsLayout() {
   return (
-    <Tabs tabBar={(props) => <Dock {...props} />} screenOptions={{ headerShown: false }}>
+    <Tabs tabBar={(props) => <Dock {...props} />} screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: colors.bg } }}>
       <Tabs.Screen name="index" />
       <Tabs.Screen name="discover" />
       {/* The Create form opens from the camera ("Write an idea") or from templates; it has no dock button. */}

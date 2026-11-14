@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 import { Animated, FlatList, Image, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import Silk from '@/components/Silk';
 import { Body, Button, Card, EmptyState, Notice, Title } from '@/components/ui';
 import { useDockSpace } from '@/components/Dock';
 import VideoFeed, { type FeedItem } from '@/components/VideoFeed';
@@ -20,6 +21,7 @@ function FamilyHome() {
   const stories = state.projects.filter((p) => p.familyChildId);
   return (
     <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+      <Silk />
       <ScrollView contentContainerStyle={{ padding: space.md, gap: space.md, paddingBottom: dockSpace + space.lg }}>
         <Title>Family stories</Title>
         <Notice icon="shield-checkmark" color={colors.family} text="Family Mode is on. The public feed, comments and publishing are switched off. Everything you make stays private on this phone." />
