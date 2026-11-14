@@ -12,4 +12,5 @@ export const CLIP_COLORS: Record<ClipKey, string> = {
   desert: '#C2410C',
   neon: '#5B3FB8',
   forest: '#166534',
+  waterfall: '#2F4F3A',
 };

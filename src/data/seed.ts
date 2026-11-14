@@ -13,6 +13,7 @@ export const SEED_USERS: User[] = [
   { id: 'u_zoe', username: 'zoe.glitch', displayName: 'Zoe', avatarColor: '#8B5CF6', bio: 'Neon, glitches and dance clips.', followers: 63100 },
   { id: 'u_leo', username: 'leo.wild', displayName: 'Leo', avatarColor: '#22C55E', bio: 'Forest explorer. Dinosaurs welcome.', followers: 9300 },
   { id: 'u_ana', username: 'ana.sketches', displayName: 'Ana', avatarColor: '#EC4899', bio: 'Watercolor worlds and calm vibes.', followers: 4700 },
+  { id: 'u_theo', username: 'theo.outdoors', displayName: 'Theo', avatarColor: '#4D7C5B', bio: 'Real places, filmed slow. Waterfalls, rivers and quiet trails.', followers: 18300 },
   { id: 'u_jay', username: 'jay.speed', displayName: 'Jay', avatarColor: '#38BDF8', bio: 'Superhero clips, fast and loud.', followers: 37900 },
 ];
 
@@ -128,6 +129,20 @@ export const SEED_VIDEOS: Video[] = [
     source: { clip: 'ocean' }, likes: 6100, shares: 330, remixAllowed: true, remixOfId: 'v_ocean',
     tags: ['ocean', 'calm', 'aurora'], visibility: 'public', createdAt: now - 26 * hour,
   },
+  {
+    id: 'v_waterfall', creatorId: 'u_theo', title: 'Morning at the hidden waterfall',
+    prompt: 'A quiet waterfall deep in the mountains, just after sunrise',
+    source: { clip: 'waterfall' }, likes: 19800, shares: 1430, remixAllowed: true,
+    tags: ['nature', 'waterfall', 'calm', 'real'], visibility: 'public', createdAt: now - 1.5 * hour,
+    credit: 'Video: Arie m den toom · CC BY 4.0 · Wikimedia Commons',
+  },
+  {
+    id: 'v_waterfall2', creatorId: 'u_theo', title: 'Stand under it with me',
+    prompt: 'I stand under a cold mountain waterfall. Then I climb the rocks beside it',
+    source: { clip: 'waterfall' }, likes: 6400, shares: 380, remixAllowed: true,
+    tags: ['nature', 'waterfall', 'adventure', 'real'], visibility: 'public', createdAt: now - 33 * hour,
+    credit: 'Video: Arie m den toom · CC BY 4.0 · Wikimedia Commons',
+  },
 ];
 
 export const SEED_COMMENTS: Comment[] = [
@@ -139,6 +154,8 @@ export const SEED_COMMENTS: Comment[] = [
   { id: 'c6', videoId: 'v_neon', userId: 'u_mira', text: 'Teach me this dance', createdAt: now - hour },
   { id: 'c7', videoId: 'v_aurora', userId: 'u_ana', text: 'So peaceful 💚', createdAt: now - 3 * hour },
   { id: 'c8', videoId: 'v_forest', userId: 'u_lumi', text: 'My kids would love this one', createdAt: now - 5 * hour },
+  { id: 'c10', videoId: 'v_waterfall', userId: 'u_mira', text: 'I can almost hear it 💧', createdAt: now - hour },
+  { id: 'c11', videoId: 'v_waterfall', userId: 'u_leo', text: 'Where is this? Adding it to my list', createdAt: now - 0.5 * hour },
   { id: 'c9', videoId: 'v_zoe3', userId: 'u_kai', text: 'Best remix of my Mars clip so far!', createdAt: now - 7 * hour },
 ];
 

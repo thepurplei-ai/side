@@ -14,6 +14,8 @@ const CLIPS: Record<ClipKey, number> = {
   desert: require('../../assets/videos/desert.mp4'),
   neon: require('../../assets/videos/neon.mp4'),
   forest: require('../../assets/videos/forest.mp4'),
+  // Real footage (free license, see `credit` on the video).
+  waterfall: require('../../assets/real/waterfall.mp4'),
 };
 
 // Cover pictures for each clip (a frame from the video), shown while it loads and in grids.
@@ -28,6 +30,7 @@ const POSTERS: Record<ClipKey, number> = {
   desert: require('../../assets/posters/desert.jpg'),
   neon: require('../../assets/posters/neon.jpg'),
   forest: require('../../assets/posters/forest.jpg'),
+  waterfall: require('../../assets/real-posters/waterfall.jpg'),
 };
 
 /** The cover picture for a clip: built-in poster, the photo itself, or a video's saved cover. */
@@ -60,6 +63,7 @@ export function clipForPrompt(text: string): ClipKey {
   if (/aurora|northern lights|arctic|ice|sky/.test(t)) return 'aurora';
   if (/desert|sand|camel|dune|sunset|egypt/.test(t)) return 'desert';
   if (/neon|cyber|hacker|code|matrix|dance|club/.test(t)) return 'neon';
+  if (/waterfall|river|cascade|stream|hike/.test(t)) return 'waterfall';
   if (/forest|jungle|tree|wood|nature|garden|dinosaur/.test(t)) return 'forest';
   if (/city|new york|street|robot|future/.test(t)) return 'city';
   return 'fantasy';

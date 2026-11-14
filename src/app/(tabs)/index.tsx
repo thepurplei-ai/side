@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Animated, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Backdrop from '@/components/Backdrop';
@@ -60,7 +60,6 @@ function FamilyHome() {
 type Page = 'following' | 'forYou';
 const PAGES: Page[] = ['following', 'forYou'];
 const MAX_ROUNDS = 6;
-const SWITCH_W = 96;
 
 function newSeed() {
   return `${Date.now()}-${Math.random()}`;
@@ -78,7 +77,7 @@ export default function Home() {
   const { state, dispatch } = useStore();
   const dockSpace = useDockSpace();
   const [page, setPage] = useState<Page>('forYou');
-  const [thumb] = useState(() => new Animated.Value(1));
+  const [pickerOpen, setPickerOpen] = useState(false);
   const [refreshCount, setRefreshCount] = useState(0);
 
   // "For You" order is fixed until you refresh (tap "For You" again), so videos don't jump around
@@ -129,17 +128,15 @@ export default function Home() {
     setRounds([...rounds, makeRound(state, flat.slice(-3).map((x) => x.video))]);
   };
 
-  // Tap to switch between Following and For You. Tapping "For You" again gives a fresh order.
-  const goTo = (p: Page) => {
+  // The header picker: choose For You or Following. Choosing For You again gives a fresh order.
+  const choose = (p: Page) => {
+    setPickerOpen(false);
     if (p === page) {
       if (p === 'forYou') refresh();
       return;
     }
     setPage(p);
-    Animated.spring(thumb, { toValue: PAGES.indexOf(p), useNativeDriver: true, friction: 9, tension: 80 }).start();
   };
-
-  const thumbX = thumb.interpolate({ inputRange: [0, 1], outputRange: [0, SWITCH_W] });
 
   return (
     <View style={{ flex: 1, backgroundColor: '#000' }}>
@@ -159,30 +156,50 @@ export default function Home() {
           action={<Button title="Discover creators" onPress={() => router.push('/discover')} />}
         />
       )}
+      {/* Header: one floating island with the logo and the feed picker. */}
       <SafeAreaView edges={['top']} style={styles.topBar} pointerEvents="box-none">
-        <Image source={require('../../../assets/images/logo.png')} style={styles.logo} accessibilityLabel="side" />
-        <View style={styles.switch}>
-          <Animated.View style={[styles.switchThumb, { transform: [{ translateX: thumbX }] }]} />
-          {PAGES.map((p) => (
-            <Pressable key={p} onPress={() => goTo(p)} hitSlop={6} style={styles.switchButton}>
-              <Text style={[styles.switchText, page === p && styles.switchTextActive]}>{p === 'forYou' ? 'For You' : 'Following'}</Text>
-            </Pressable>
-          ))}
+        <View style={styles.island}>
+          <Image source={require('../../../assets/images/logo.png')} style={styles.logo} accessibilityLabel="side" />
+          <View style={styles.divider} />
+          <Pressable onPress={() => setPickerOpen((o) => !o)} hitSlop={8} style={styles.picker} accessibilityRole="button" accessibilityLabel="Choose feed">
+            <Text style={styles.pickerText}>{page === 'forYou' ? 'For You' : 'Following'}</Text>
+            <Ionicons name={pickerOpen ? 'chevron-up' : 'chevron-down'} size={14} color={colors.text} />
+          </Pressable>
         </View>
-        <View style={{ width: 67 }} />
+        {pickerOpen && (
+          <View style={styles.menu}>
+            {PAGES.slice().reverse().map((p) => (
+              <Pressable key={p} onPress={() => choose(p)} style={({ pressed }) => [styles.menuItem, pressed && { opacity: 0.7 }]}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.menuLabel}>{p === 'forYou' ? 'For You' : 'Following'}</Text>
+                  <Text style={styles.menuHint}>
+                    {p === 'forYou' ? (page === 'forYou' ? 'Tap to get a fresh mix' : 'Picked for your taste') : 'Newest from people you follow'}
+                  </Text>
+                </View>
+                {page === p && <Ionicons name="checkmark" size={18} color={colors.text} />}
+              </Pressable>
+            ))}
+          </View>
+        )}
       </SafeAreaView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  topBar: { position: 'absolute', top: 0, left: 0, right: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space.md, paddingTop: space.sm },
-  logo: { width: 67, height: 22, resizeMode: 'contain' },
-  switch: { flexDirection: 'row', padding: 3, borderRadius: radius.pill, backgroundColor: colors.glass, borderWidth: 1, borderColor: colors.glassBorder, marginTop: space.sm },
-  switchThumb: { position: 'absolute', top: 3, left: 3, width: SWITCH_W, bottom: 3, borderRadius: radius.pill, backgroundColor: colors.primary },
-  switchButton: { width: SWITCH_W, paddingVertical: 7, alignItems: 'center' },
-  switchText: { color: colors.textDim, fontFamily: fonts.heavy, fontSize: 13.5 },
-  switchTextActive: { color: colors.onPrimary },
+  topBar: { position: 'absolute', top: 0, left: 0, right: 0, alignItems: 'center', paddingTop: space.sm, gap: 6 },
+  island: {
+    flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 8, paddingHorizontal: 14, marginTop: space.sm,
+    borderRadius: radius.pill, backgroundColor: colors.glass, borderWidth: 1, borderColor: colors.glassBorder,
+  },
+  logo: { width: 55, height: 18, resizeMode: 'contain' },
+  divider: { width: 1, height: 16, backgroundColor: colors.glassBorder },
+  picker: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  pickerText: { color: colors.text, fontFamily: fonts.heavy, fontSize: 14 },
+  menu: { width: 250, padding: 6, borderRadius: radius.lg, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
+  menuItem: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 10, paddingHorizontal: 12, borderRadius: radius.md },
+  menuLabel: { color: colors.text, fontFamily: fonts.heavy, fontSize: 15 },
+  menuHint: { color: colors.textDim, fontFamily: fonts.regular, fontSize: 12 },
   section: { color: colors.text, fontSize: 18, fontFamily: fonts.heavy, marginTop: space.sm },
   ideas: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
   idea: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 12, paddingHorizontal: 14, borderRadius: radius.md },

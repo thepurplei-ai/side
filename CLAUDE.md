@@ -26,13 +26,17 @@ them short. Never ask the owner to run terminal commands: run them yourself.
   media to Create via `state.draft` (not URL params). Create can "Post as it is" (your own clip) or
   "Transform with AI". Photo posts show with a slow zoom; wide videos are shown whole on a blurred copy.
 - Plain "Your own idea" card (`src/components/OwnIdeaCard.tsx`) opens a blank Create (`fresh` param).
+- Real footage: `assets/real` (+ `assets/real-posters`), free-licensed from Wikimedia Commons; every such video
+  has a `credit` line shown on the clip. Wikimedia blocks automated downloads without a contact in the User-Agent.
 - Demo clips 720x1280 + cover pictures (`assets/posters`) made by `scripts/make-sample-videos.sh`.
 - Look: "Monochrome Studio" (`src/theme.ts`, chosen by the owner): pure black and white with one red "recording" dot (`highlight`/`accent`: logo dot, progress line, recording, likes). White buttons with black text. Soft studio-light backdrop (`src/components/Backdrop.tsx`, add it to every new tab screen). Fraunces serif titles + Manrope.
-  Floating dock menu (`src/components/Dock.tsx`) with a white camera shutter that opens `src/app/camera.tsx`.
+  Layout (owner's mix of options 4+6 for the top, 2+5 for the bottom): Home header is one floating island (logo +
+  "For You ▾" picker). No bottom menu bar: `src/components/Dock.tsx` shows a big centre camera button (opens
+  `src/app/camera.tsx`) and a corner ☰ button that opens the menu sheet (Home, Discover, Studio, Profile, Your own idea).
   Videos show a "ticket" info panel and a red progress line, not a side icon rail.
 - Home: videos slide sideways (left = next), one per swipe. Phones use the native page swiper
   (`src/components/VideoFeed.tsx`, react-native-pager-view) with a black veil so nothing of the next clip
-  shows; `VideoFeed.web.tsx` is a FlatList copy for browser tests only. Following / For You is a tap switch; tapping For You again refreshes.
+  shows; `VideoFeed.web.tsx` is a FlatList copy for browser tests only. Following / For You is picked in the header; picking For You again refreshes.
 - `src/ai/generator.ts`: `VideoGenerator` interface. `PreviewGenerator` returns sample clips until a real
   AI video service is connected. Screens only use the interface.
 - `src/services/moderation.ts`: on-phone safety checks (pure TS). Tested.

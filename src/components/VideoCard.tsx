@@ -293,6 +293,7 @@ export default function VideoCard({
         <Text style={styles.title} numberOfLines={2}>{video.title}</Text>
         <Text style={styles.prompt} numberOfLines={2}>“{video.prompt}”</Text>
         {original && <Text style={styles.remixOf} numberOfLines={1}>↻ Their version of “{original.title}”</Text>}
+        {video.credit && <Text style={styles.credit} numberOfLines={1}>{video.credit}</Text>}
 
         <View style={styles.perforation} />
 
@@ -329,6 +330,7 @@ const styles = StyleSheet.create({
   followText: { color: colors.onPrimary, fontFamily: fonts.heavy, fontSize: 13 },
   title: { color: colors.text, fontFamily: fonts.display, fontSize: 21, lineHeight: 26, marginTop: 4 },
   prompt: { color: colors.textDim, fontFamily: fonts.regular, fontSize: 13.5, fontStyle: 'italic', lineHeight: 19 },
+  credit: { color: colors.textDim, fontFamily: fonts.regular, fontSize: 10.5 },
   remixOf: { color: colors.primary, fontSize: 13, fontFamily: fonts.bold },
   perforation: { borderTopWidth: 1.5, borderStyle: 'dashed', borderColor: colors.glassBorder, marginVertical: 6 },
   actions: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 4 },

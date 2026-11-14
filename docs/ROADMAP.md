@@ -30,6 +30,8 @@
 - Version 8: "Monochrome Studio" look (black and white with one red dot), chosen from 8 options.
 - Version 9: swipe engine: skip/watched/rewatch signals, fresh mode after quick skips, adaptive
   preloading, resume on swipe-back, haptic tick and depth effect while swiping.
+- Version 10: new layout (floating header island with feed picker, big centre camera button, corner
+  menu), first real footage with credits.
 
 Everything is saved on the phone. Video generation is in **preview mode** (sample clips).
 

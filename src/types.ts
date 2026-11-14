@@ -1,7 +1,7 @@
 // The shapes of the data Side works with.
 
 /** Built-in demo clips (see src/data/clips.ts). */
-export type ClipKey = 'hero' | 'mars' | 'christmas' | 'fantasy' | 'ocean' | 'city' | 'aurora' | 'desert' | 'neon' | 'forest';
+export type ClipKey = 'hero' | 'mars' | 'christmas' | 'fantasy' | 'ocean' | 'city' | 'aurora' | 'desert' | 'neon' | 'forest' | 'waterfall';
 
 /** Where a video's picture comes from: a built-in clip or a file on the phone / in the cloud. */
 export interface MediaSource {
@@ -55,6 +55,8 @@ export interface Video {
   tags: string[];
   visibility: Visibility;
   createdAt: number;
+  /** For real footage from free libraries: who filmed it and the license, shown on the clip. */
+  credit?: string;
 }
 
 export interface Comment {

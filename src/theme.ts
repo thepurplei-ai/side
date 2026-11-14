@@ -46,5 +46,5 @@ export const radius = { sm: 10, md: 16, lg: 24, pill: 999 } as const;
 export const space = { xs: 4, sm: 8, md: 16, lg: 24, xl: 32 } as const;
 
 /** Height of the floating dock (menu) at the bottom, without the phone's own bottom bar. */
-export const DOCK_HEIGHT = 68;
+export const DOCK_HEIGHT = 64;
 export const DOCK_MARGIN = 12;
