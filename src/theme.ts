@@ -1,11 +1,11 @@
-// side's look: "Midnight Cinema". Deep night-blue screens, electric violet like neon cinema lights,
+// side's look: "Midnight Cinema". Deep violet-black screens, electric violet like neon cinema lights,
 // cream text like an old film poster, and a serif display font for titles.
 // Change colours and fonts here to restyle the whole app.
 export const colors = {
-  bg: '#0A0A16',
-  surface: '#14142A',
-  surface2: '#1D1D3A',
-  border: '#2B2B52',
+  bg: '#0E0C14',
+  surface: '#18151F',
+  surface2: '#221E2B',
+  border: '#2F2A3B',
   text: '#F7F0E3',
   textDim: '#A7A2BF',
   /** Electric violet: main buttons, the camera shutter, highlights. */
@@ -20,7 +20,7 @@ export const colors = {
   danger: '#FF7A7A',
   family: '#2E9BE6',
   /** See-through panels that sit on top of videos. */
-  glass: 'rgba(10,10,22,0.72)',
+  glass: 'rgba(14,12,20,0.74)',
   glassBorder: 'rgba(247,240,227,0.14)',
 } as const;
 

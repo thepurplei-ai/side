@@ -14,7 +14,7 @@ them short. Never ask the owner to run terminal commands: run them yourself.
 - `src/ai/director.ts`: the AI Director (pure TS, offline rules). Tested.
 - `src/ai/recommender.ts`: the For You algorithm (watch time, likes, saves, follows, skips,
   "Not interested", freshness, diversity, exploration). Pure TS. Tested.
-- Look: "Midnight Cinema" (`src/theme.ts`): night-blue, electric violet (#7B68FF), cream, Fraunces serif titles + Manrope.
+- Look: "Midnight Cinema" (`src/theme.ts`): violet-black, electric violet (#7B68FF), cream, Fraunces serif titles + Manrope.
   Floating dock menu (`src/components/Dock.tsx`) with a violet camera shutter that opens `src/app/camera.tsx`.
   Videos show a "ticket" info panel and a violet progress line, not a side icon rail.
 - Home is a sideways pager (Following ⇄ For You); each page is a vertical feed (`src/components/VideoFeed.tsx`).

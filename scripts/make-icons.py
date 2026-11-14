@@ -9,7 +9,7 @@ HERE = os.path.dirname(__file__)
 OUT = os.path.join(HERE, '..', 'assets', 'images')
 FONT = os.path.join(HERE, '..', 'node_modules', '@expo-google-fonts', 'manrope', '800ExtraBold', 'Manrope_800ExtraBold.ttf')
 CREAM, VIOLET = (247, 240, 227), (123, 104, 255)
-TOP, BOTTOM = (40, 32, 92), (10, 10, 22)
+TOP, BOTTOM = (38, 30, 64), (14, 12, 20)
 
 
 def gradient(size):

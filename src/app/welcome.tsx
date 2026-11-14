@@ -52,7 +52,7 @@ export default function Welcome() {
   };
 
   return (
-    <LinearGradient colors={['#221B4A', colors.bg, colors.bg]} style={{ flex: 1 }}>
+    <LinearGradient colors={['#251E3D', colors.bg, colors.bg]} style={{ flex: 1 }}>
       <SafeAreaView style={{ flex: 1 }}>
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
           <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
