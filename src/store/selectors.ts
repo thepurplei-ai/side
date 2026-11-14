@@ -1,3 +1,4 @@
+import { rankFeed, type Signals } from '@/ai/recommender';
 import type { AppState } from '@/store/AppStore';
 import type { Video } from '@/types';
 
@@ -6,12 +7,34 @@ export function publicVideos(state: AppState): Video[] {
   return state.videos.filter((v) => v.visibility === 'public' && !state.hidden[v.id]);
 }
 
-/** Home feed: people you follow first, then everything else, newest first. */
-export function homeFeed(state: AppState): Video[] {
-  const all = publicVideos(state);
-  const followed = all.filter((v) => state.following[v.creatorId]);
-  const rest = all.filter((v) => !state.following[v.creatorId]);
-  return [...followed, ...rest];
+export function signalsFrom(state: AppState): Signals {
+  const commentCounts: Record<string, number> = {};
+  const engaged: Record<string, true> = { ...state.shared };
+  for (const c of state.comments) {
+    commentCounts[c.videoId] = (commentCounts[c.videoId] ?? 0) + 1;
+    if (c.userId === state.me?.id) engaged[c.videoId] = true;
+  }
+  return {
+    liked: state.liked,
+    saved: state.saved,
+    following: state.following,
+    notInterested: state.notInterested,
+    engaged,
+    watch: state.watch,
+    commentCounts,
+  };
+}
+
+/** "For You": ordered by the feed algorithm (src/ai/recommender.ts). */
+export function forYouFeed(state: AppState, seed: string): Video[] {
+  return rankFeed(publicVideos(state), signalsFrom(state), { now: Date.now(), meId: state.me?.id, seed });
+}
+
+/** "Following": newest videos from people you follow. */
+export function followingFeed(state: AppState): Video[] {
+  return publicVideos(state)
+    .filter((v) => state.following[v.creatorId] && !state.notInterested[v.id])
+    .sort((a, b) => b.createdAt - a.createdAt);
 }
 
 export function trending(state: AppState): Video[] {

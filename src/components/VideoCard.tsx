@@ -3,14 +3,17 @@ import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useVideoPlayer, VideoView } from 'expo-video';
-import { useEffect, useState } from 'react';
-import { Alert, Image, Pressable, Share, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Alert, Animated, Image, Pressable, Share, StyleSheet, Text, View } from 'react-native';
 
 import { Avatar, compactNumber, IconName } from '@/components/ui';
+import { CLIP_COLORS } from '@/data/clipColors';
 import { toVideoSource } from '@/data/clips';
 import { newId, useStore, useUser } from '@/store/AppStore';
 import { colors, radius, space } from '@/theme';
 import type { Video } from '@/types';
+
+const nowMs = () => Date.now();
 
 export const REPORT_REASONS = ['Nudity or sexual content', 'Uses my face without permission', 'Violence or harm', 'Hate or bullying', 'Involves a child unsafely', 'Spam or scam', 'Something else'];
 
@@ -23,7 +26,9 @@ function RailButton({ icon, label, onPress, color = '#fff' }: { icon: IconName; 
   );
 }
 
-export default function VideoCard({ video, active, height, bottomInset = 0 }: { video: Video; active: boolean; height: number; bottomInset?: number }) {
+export default function VideoCard({
+  video, active, height, bottomInset = 0, preload = true,
+}: { video: Video; active: boolean; height: number; bottomInset?: number; preload?: boolean }) {
   const { state, dispatch } = useStore();
   const creator = useUser(video.creatorId);
   const original = state.videos.find((v) => v.id === video.remixOfId);
@@ -34,9 +39,47 @@ export default function VideoCard({ video, active, height, bottomInset = 0 }: { 
   const following = !!state.following[video.creatorId];
   const commentCount = state.comments.filter((c) => c.videoId === video.id && !state.hidden[c.id]).length;
 
-  const player = useVideoPlayer(toVideoSource(video.source), (p) => {
+  // Videos far from the screen are not loaded, to save memory and battery.
+  const player = useVideoPlayer(preload || active ? toVideoSource(video.source) : null, (p) => {
     p.loop = true;
   });
+
+  // Feed algorithm: remember how long this video was watched each time it was on screen.
+  useEffect(() => {
+    if (!active) return;
+    const start = Date.now();
+    let duration = 6;
+    const timer = setTimeout(() => {
+      try {
+        if (player.duration > 0) duration = player.duration;
+      } catch {}
+    }, 1000);
+    return () => {
+      clearTimeout(timer);
+      dispatch({ type: 'recordView', videoId: video.id, watchedMs: Date.now() - start, durationSec: duration });
+    };
+  }, [active, video.id, player, dispatch]);
+
+  // Double-tap to like, with a heart that pops up. A single tap pauses.
+  const [heart] = useState(() => new Animated.Value(0));
+  const lastTap = useRef(0);
+  const tapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const onTap = () => {
+    const now = nowMs();
+    if (now - lastTap.current < 280) {
+      if (tapTimer.current) clearTimeout(tapTimer.current);
+      lastTap.current = 0;
+      if (!liked) like();
+      heart.setValue(0);
+      Animated.sequence([
+        Animated.spring(heart, { toValue: 1, useNativeDriver: true, friction: 4 }),
+        Animated.timing(heart, { toValue: 0, duration: 250, delay: 350, useNativeDriver: true }),
+      ]).start();
+      return;
+    }
+    lastTap.current = now;
+    tapTimer.current = setTimeout(() => setPaused((p) => !p), 280);
+  };
 
   useEffect(() => {
     if (active && !paused) player.play();
@@ -78,14 +121,20 @@ export default function VideoCard({ video, active, height, bottomInset = 0 }: { 
   const more = () => {
     Alert.alert(video.title, undefined, [
       { text: saved ? 'Remove from saved' : 'Save', onPress: () => dispatch({ type: 'toggleSave', videoId: video.id }) },
+      ...(isMe
+        ? []
+        : [{ text: 'Not interested', onPress: () => {
+            dispatch({ type: 'notInterested', videoId: video.id });
+            Alert.alert('Got it', 'You will see fewer videos like this.');
+          } }]),
       ...(isMe ? [] : [{ text: 'Report', style: 'destructive' as const, onPress: report }]),
       { text: 'Cancel', style: 'cancel' as const },
     ]);
   };
 
   return (
-    <View style={{ height, backgroundColor: '#000' }}>
-      <Pressable style={StyleSheet.absoluteFill} onPress={() => setPaused((p) => !p)} onLongPress={more}>
+    <View style={{ height, backgroundColor: CLIP_COLORS[video.source.clip ?? 'fantasy'] }}>
+      <Pressable style={StyleSheet.absoluteFill} onPress={onTap} onLongPress={more}>
         <VideoView player={player} style={StyleSheet.absoluteFill} contentFit="cover" nativeControls={false} />
         {video.castUri && (
           <View style={styles.cast}>
@@ -93,6 +142,11 @@ export default function VideoCard({ video, active, height, bottomInset = 0 }: { 
             <Text style={styles.castText}>STARRING</Text>
           </View>
         )}
+        <Animated.View
+          pointerEvents="none"
+          style={[styles.pausedIcon, { opacity: heart, transform: [{ scale: heart.interpolate({ inputRange: [0, 1], outputRange: [0.4, 1.2] }) }] }]}>
+          <Ionicons name="heart" size={110} color={colors.primary} />
+        </Animated.View>
         {paused && (
           <View style={styles.pausedIcon} pointerEvents="none">
             <Ionicons name="play" size={72} color="rgba(255,255,255,0.8)" />

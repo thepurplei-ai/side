@@ -12,6 +12,9 @@ them short. Never ask the owner to run terminal commands: run them yourself.
 - Expo (React Native) + TypeScript + Expo Router. Screens live in `src/app/` (every file is a route).
 - Tabs: `src/app/(tabs)/` → Home (`index`), Discover, Create, Studio, Profile.
 - `src/ai/director.ts`: the AI Director (pure TS, offline rules). Tested.
+- `src/ai/recommender.ts`: the For You algorithm (watch time, likes, saves, follows, skips,
+  "Not interested", freshness, diversity, exploration). Pure TS. Tested.
+- Home is a sideways pager (Following ⇄ For You); each page is a vertical feed (`src/components/VideoFeed.tsx`).
 - `src/ai/generator.ts`: `VideoGenerator` interface. `PreviewGenerator` returns sample clips until a real
   AI video service is connected. Screens only use the interface.
 - `src/services/moderation.ts`: on-phone safety checks (pure TS). Tested.

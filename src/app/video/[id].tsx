@@ -19,5 +19,5 @@ export default function VideoScreen() {
   const live = videos.map((v) => state.videos.find((x) => x.id === v.id)).filter((v) => !!v);
   const index = Math.max(0, live.findIndex((v) => v.id === id));
   if (live.length === 0) return <EmptyState icon="videocam-off-outline" title="Video not available" text="It may have been removed." />;
-  return <VideoFeed videos={live} initialIndex={index} />;
+  return <VideoFeed items={live.map((v) => ({ key: v.id, video: v }))} initialIndex={index} />;
 }

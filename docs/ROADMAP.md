@@ -11,6 +11,10 @@
 - Studio: projects, scene editing, make video, publish (everyone / followers / only me, allow remixes).
 - Family Mode: PIN-protected, private, gentle stories, child profiles under the parent.
 - 18+ sign-up, on-phone moderation, reports.
+- Version 2: swipe sideways between Following and For You; smoother one-video-per-swipe
+  scrolling with the next video preloaded; double-tap to like; "Not interested"; a For You
+  algorithm that learns from watch time, likes, saves, follows and skips, mixes topics and
+  keeps some new things in the feed; endless feed and pull-down to refresh.
 
 Everything is saved on the phone. Video generation is in **preview mode** (sample clips).
 

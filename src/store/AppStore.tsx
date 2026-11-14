@@ -5,6 +5,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, ReactNode, useContext, useEffect, useMemo, useReducer } from 'react';
 
+import { addView, type WatchStat } from '@/ai/recommender';
 import { SEED_COMMENTS, SEED_USERS, SEED_VIDEOS } from '@/data/seed';
 import type { ChildProfile, Comment, FamilySettings, Project, Report, User, Video } from '@/types';
 
@@ -22,6 +23,10 @@ export interface AppState {
   saved: Record<string, true>;
   following: Record<string, true>;
   hidden: Record<string, true>;
+  /** Feed algorithm signals. */
+  watch: Record<string, WatchStat>;
+  notInterested: Record<string, true>;
+  shared: Record<string, true>;
   projects: Project[];
   family: FamilySettings;
   reports: Report[];
@@ -38,6 +43,9 @@ const initialState: AppState = {
   saved: {},
   following: {},
   hidden: {},
+  watch: {},
+  notInterested: {},
+  shared: {},
   projects: [],
   family: { enabled: false, children: [] },
   reports: [],
@@ -51,6 +59,8 @@ export type Action =
   | { type: 'toggleSave'; videoId: string }
   | { type: 'toggleFollow'; userId: string }
   | { type: 'share'; videoId: string }
+  | { type: 'recordView'; videoId: string; watchedMs: number; durationSec: number }
+  | { type: 'notInterested'; videoId: string }
   | { type: 'addComment'; comment: Comment }
   | { type: 'deleteComment'; commentId: string }
   | { type: 'report'; report: Report }
@@ -99,8 +109,12 @@ function reducer(state: AppState, action: Action): AppState {
         users: state.users.map((u) => (u.id === action.userId ? { ...u, followers: u.followers + (was ? -1 : 1) } : u)),
       };
     }
+    case 'recordView':
+      return { ...state, watch: { ...state.watch, [action.videoId]: addView(state.watch[action.videoId], action.watchedMs, action.durationSec, Date.now()) } };
+    case 'notInterested':
+      return { ...state, notInterested: { ...state.notInterested, [action.videoId]: true } };
     case 'share':
-      return { ...state, videos: state.videos.map((v) => (v.id === action.videoId ? { ...v, shares: v.shares + 1 } : v)) };
+      return { ...state, shared: { ...state.shared, [action.videoId]: true }, videos: state.videos.map((v) => (v.id === action.videoId ? { ...v, shares: v.shares + 1 } : v)) };
     case 'addComment':
       return { ...state, comments: [...state.comments, action.comment] };
     case 'deleteComment':
@@ -157,6 +171,9 @@ function toSaved(s: AppState) {
     saved: s.saved,
     following: s.following,
     hidden: s.hidden,
+    watch: s.watch,
+    notInterested: s.notInterested,
+    shared: s.shared,
     projects: s.projects,
     family: s.family,
     reports: s.reports,
@@ -189,6 +206,9 @@ function fromSaved(saved: Saved): Partial<AppState> {
     saved: saved.saved ?? {},
     following: saved.following ?? {},
     hidden: saved.hidden ?? {},
+    watch: saved.watch ?? {},
+    notInterested: saved.notInterested ?? {},
+    shared: saved.shared ?? {},
     projects,
     family: saved.family ?? { enabled: false, children: [] },
     reports: saved.reports ?? [],
