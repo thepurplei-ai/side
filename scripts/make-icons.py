@@ -1,6 +1,6 @@
 """Makes the side logo and app icons (run: python3 scripts/make-icons.py).
 
-The logo is the word "side" in lowercase. The dot on the "i" is a gold play button.
+The logo is the word "side" in lowercase, followed by a violet dot: "side."
 """
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import os
@@ -8,7 +8,7 @@ import os
 HERE = os.path.dirname(__file__)
 OUT = os.path.join(HERE, '..', 'assets', 'images')
 FONT = os.path.join(HERE, '..', 'node_modules', '@expo-google-fonts', 'manrope', '800ExtraBold', 'Manrope_800ExtraBold.ttf')
-CREAM, GOLD = (247, 240, 227), (242, 181, 68)
+CREAM, VIOLET = (247, 240, 227), (123, 104, 255)
 TOP, BOTTOM = (40, 32, 92), (10, 10, 22)
 
 
@@ -22,31 +22,18 @@ def gradient(size):
     return img
 
 
-def wordmark(height, color=CREAM, dot=GOLD):
-    """Draws "side" with a play-button dot on the i. Returns a tight transparent image."""
+def wordmark(height, color=CREAM, dot=VIOLET):
+    """Draws "side" followed by a round violet dot. Returns a tight transparent image."""
     font = ImageFont.truetype(FONT, int(height))
     pad = int(height * 0.6)
     canvas = Image.new('RGBA', (int(height * 4) + 2 * pad, int(height * 2) + 2 * pad), (0, 0, 0, 0))
     d = ImageDraw.Draw(canvas)
-    x, base = pad, pad + int(height * 0.6)
-    parts = ['s', 'ı', 'de']  # dotless i, so we can draw our own dot
-    i_box = None
-    for p in parts:
-        box = d.textbbox((x, base), p, font=font, anchor='ls')
-        d.text((x, base), p, font=font, fill=color, anchor='ls')
-        if p == 'ı':
-            i_box = box
-        x = box[2] + int(height * 0.02)
-    # Play-button dot above the i.
-    cx = (i_box[0] + i_box[2]) / 2
-    s = height * 0.2
-    top = i_box[1] - height * 0.07 - s
-    # Rounded play triangle, centred over the i.
-    tri = Image.new('RGBA', canvas.size, (0, 0, 0, 0))
-    ImageDraw.Draw(tri).polygon([(cx - s * 0.38, top), (cx - s * 0.38, top + s), (cx + s * 0.5, top + s / 2)], fill=dot)
-    tri = tri.filter(ImageFilter.GaussianBlur(height * 0.012))
-    alpha = tri.split()[3].point(lambda v: 255 if v > 110 else 0)
-    canvas.paste(dot, mask=alpha)
+    x, base = pad, pad + int(height * 1.2)
+    box = d.textbbox((x, base), 'side', font=font, anchor='ls')
+    d.text((x, base), 'side', font=font, fill=color, anchor='ls')
+    r = height * 0.1
+    cx = box[2] + height * 0.06 + r
+    d.ellipse([cx - r, base - 2 * r, cx + r, base], fill=dot)
     return canvas.crop(canvas.getbbox())
 
 

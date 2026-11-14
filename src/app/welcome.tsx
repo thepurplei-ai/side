@@ -109,7 +109,7 @@ export default function Welcome() {
 }
 
 const styles = StyleSheet.create({
-  logoImage: { width: 120, height: 48, resizeMode: 'contain' },
+  logoImage: { width: 147, height: 48, resizeMode: 'contain' },
   container: { padding: space.lg, gap: space.md, paddingTop: space.xl },
   headline: { color: colors.text, fontSize: 34, fontFamily: fonts.display, lineHeight: 40, marginTop: space.md },
   input: {

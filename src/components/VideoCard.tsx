@@ -27,7 +27,7 @@ function Action({ icon, label, onPress, color = colors.text }: { icon: IconName;
   );
 }
 
-/** Thin gold line at the top that fills up as the video plays. */
+/** Thin violet line at the top that fills up as the video plays. */
 function Progress({ player, active }: { player: ReturnType<typeof useVideoPlayer>; active: boolean }) {
   const { currentTime } = useEvent(player, 'timeUpdate', { currentTime: 0, currentLiveTimestamp: null, currentOffsetFromLive: null, bufferedPosition: 0 });
   let duration = 0;

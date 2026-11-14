@@ -157,7 +157,7 @@ export default function Home() {
             </Pressable>
           ))}
         </View>
-        <View style={{ width: 55 }} />
+        <View style={{ width: 67 }} />
       </SafeAreaView>
     </View>
   );
@@ -165,7 +165,7 @@ export default function Home() {
 
 const styles = StyleSheet.create({
   topBar: { position: 'absolute', top: 0, left: 0, right: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space.md, paddingTop: space.sm },
-  logo: { width: 55, height: 22, resizeMode: 'contain' },
+  logo: { width: 67, height: 22, resizeMode: 'contain' },
   switch: { flexDirection: 'row', padding: 3, borderRadius: radius.pill, backgroundColor: colors.glass, borderWidth: 1, borderColor: colors.glassBorder, marginTop: space.sm },
   switchThumb: { position: 'absolute', top: 3, left: 3, width: SWITCH_W, bottom: 3, borderRadius: radius.pill, backgroundColor: colors.primary },
   switchButton: { width: SWITCH_W, paddingVertical: 7, alignItems: 'center' },
