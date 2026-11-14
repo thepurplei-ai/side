@@ -117,3 +117,27 @@ test('mixing continues smoothly from what was just shown', () => {
   const order = rankFeed(videos.filter((x) => x.id !== 'hero1'), s, { now: NOW, context: [videos.find((x) => x.id === 'hero1')!] });
   assert.notEqual(order[0].creatorId, 'nova');
 });
+
+test('swiping back to a clip counts as liking it', () => {
+  const s = empty();
+  s.rewatched = { space1: true };
+  s.watch.space1 = addView(undefined, 6000, 6, NOW - H);
+  const order = rankFeed(videos, s, { now: NOW }).map((x) => x.id).filter((id) => id !== 'space1');
+  assert.equal(order[0], 'space2');
+});
+
+test('fresh mood: after quick skips, the feed leans away from the usual taste', () => {
+  const s = empty();
+  for (const id of ['space1', 'space2']) {
+    s.liked[id] = true;
+    s.watch[id] = addView(undefined, 12000, 6, NOW - 30 * H);
+  }
+  const pool = [...videos, { ...videos[0], id: 'space3', creatorId: 'zed', title: 'mars rocket', prompt: 'space mars rocket' }];
+  let normal = 0;
+  let fresh = 0;
+  for (let i = 0; i < 30; i++) {
+    normal += rankFeed(pool, s, { now: NOW, seed: String(i) }).findIndex((x) => x.id === 'space3');
+    fresh += rankFeed(pool, s, { now: NOW, seed: String(i), mood: 'fresh' }).findIndex((x) => x.id === 'space3');
+  }
+  assert.ok(fresh > normal, `average place: normal ${normal / 30}, fresh ${fresh / 30}`);
+});

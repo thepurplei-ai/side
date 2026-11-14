@@ -54,6 +54,8 @@ export interface Signals {
   watch: Record<string, WatchStat>;
   /** Number of comments on each video. */
   commentCounts: Record<string, number>;
+  /** Clips you swiped back to and watched again (from the swipe engine): a strong "I liked it". */
+  rewatched?: Record<string, true>;
 }
 
 /** A view shorter than this (and under 25% of the video) counts as a skip. */
@@ -160,6 +162,7 @@ export function affinity(videoId: string, s: Signals): number {
   if (s.liked[videoId]) a += 1;
   if (s.saved[videoId]) a += 1.2;
   if (s.engaged[videoId]) a += 0.8;
+  if (s.rewatched?.[videoId]) a += 1.2;
   return a;
 }
 
@@ -296,8 +299,12 @@ function seenPenalty(v: Video, s: Signals, now: number, meId?: string): number {
   return p;
 }
 
-export function scoreAll(videos: Video[], s: Signals, opts: { now: number; meId?: string; seed?: string }) {
+export function scoreAll(videos: Video[], s: Signals, opts: { now: number; meId?: string; seed?: string; mood?: 'normal' | 'fresh' }) {
   const { now, meId, seed = '' } = opts;
+  // "Fresh" mood (a run of quick skips): lean less on your usual taste, more on discovery.
+  const freshMood = opts.mood === 'fresh';
+  const wRelevance = freshMood ? WEIGHTS.relevance * 0.5 : WEIGHTS.relevance;
+  const wDiscovery = freshMood ? WEIGHTS.discovery * 2.2 : WEIGHTS.discovery;
   const fps = fingerprints(videos);
   const taste = buildTaste(videos, fps, s, now);
   const rnd = seededRandom(`side:${seed}`);
@@ -310,13 +317,20 @@ export function scoreAll(videos: Video[], s: Signals, opts: { now: number; meId?
       return sampleBeta(1 + hits, 1 + misses, rnd);
     });
     const discovery = samples.reduce((a, b) => a + b, 0) / samples.length - 0.5; // -0.5..0.5
+    // Novelty: topics we have seen you react to least (1 = never seen, near 0 = very familiar).
+    const novelty =
+      (v.tags.length ? v.tags : ['_none']).reduce((sum, t) => {
+        const [hits, misses] = taste.topics.get(t) ?? [0, 0];
+        return sum + 1 / (1 + hits + misses);
+      }, 0) / Math.max(1, v.tags.length);
     const q = quality(v, s.commentCounts[v.id] ?? 0);
     const fresh = freshness(v, now);
     const follow = s.following[v.creatorId] ? 1 : 0;
     const penalty = seenPenalty(v, s, now, meId);
     const total =
-      WEIGHTS.relevance * relevance +
-      WEIGHTS.discovery * discovery +
+      wRelevance * relevance +
+      wDiscovery * discovery +
+      (freshMood ? 0.9 * novelty : 0) +
       WEIGHTS.quality * q +
       WEIGHTS.freshness * fresh +
       WEIGHTS.follow * follow -
@@ -338,11 +352,13 @@ export interface RankOptions {
   context?: Video[];
   /** 1 = only score, 0 = only variety. Default WEIGHTS.mmrLambda. */
   lambda?: number;
+  /** From the swipe engine: 'fresh' after a run of quick skips = more variety and new topics. */
+  mood?: 'normal' | 'fresh';
 }
 
 /** Orders the feed. Videos you said "Not interested" to are removed. */
 export function rankFeed(videos: Video[], s: Signals, opts: RankOptions): Video[] {
-  const lambda = opts.lambda ?? WEIGHTS.mmrLambda;
+  const lambda = opts.lambda ?? (opts.mood === 'fresh' ? 0.5 : WEIGHTS.mmrLambda);
   const scored = scoreAll(
     videos.filter((v) => !s.notInterested[v.id]),
     s,

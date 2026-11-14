@@ -10,11 +10,19 @@ import { Alert, Animated, Image, Pressable, Share, StyleSheet, Text, View } from
 import { Avatar, compactNumber, IconName } from '@/components/ui';
 import { CLIP_COLORS } from '@/data/clipColors';
 import { posterFor, toVideoSource } from '@/data/clips';
+import { playbackDurations, playbackTimes } from '@/components/playback';
 import { newId, useStore, useUser } from '@/store/AppStore';
 import { colors, radius, space, fonts } from '@/theme';
 import type { Video } from '@/types';
 
 const nowMs = () => Date.now();
+
+/** Jump a player to a time (seconds); ignored if the player isn't ready. */
+function seekTo(player: { currentTime: number }, time: number) {
+  try {
+    player.currentTime = time;
+  } catch {}
+}
 
 export const REPORT_REASONS = ['Nudity or sexual content', 'Uses my face without permission', 'Violence or harm', 'Hate or bullying', 'Involves a child unsafely', 'Spam or scam', 'Something else'];
 
@@ -28,12 +36,18 @@ function Action({ icon, label, onPress, color = colors.text }: { icon: IconName;
 }
 
 /** Thin coral line at the top that fills up as the video plays. */
-function Progress({ player, active }: { player: ReturnType<typeof useVideoPlayer>; active: boolean }) {
+function Progress({ player, active, videoId }: { player: ReturnType<typeof useVideoPlayer>; active: boolean; videoId: string }) {
   const { currentTime } = useEvent(player, 'timeUpdate', { currentTime: 0, currentLiveTimestamp: null, currentOffsetFromLive: null, bufferedPosition: 0 });
   let duration = 0;
   try {
     duration = player.duration;
   } catch {}
+  // Share the position with the swipe engine (how much was watched, where to resume).
+  useEffect(() => {
+    if (!active) return;
+    playbackTimes.set(videoId, currentTime);
+    if (duration > 0) playbackDurations.set(videoId, duration);
+  }, [active, videoId, currentTime, duration]);
   const pct = active && duration > 0 ? Math.min(100, (currentTime / duration) * 100) : 0;
   return (
     <View style={styles.progressTrack} pointerEvents="none">
@@ -43,8 +57,17 @@ function Progress({ player, active }: { player: ReturnType<typeof useVideoPlayer
 }
 
 export default function VideoCard({
-  video, active, width, height, bottomInset = 0, preload = true,
-}: { video: Video; active: boolean; width?: number; height: number; bottomInset?: number; preload?: boolean }) {
+  video, active, width, height, bottomInset = 0, preload = true, resumeAt,
+}: {
+  video: Video;
+  active: boolean;
+  width?: number;
+  height: number;
+  bottomInset?: number;
+  preload?: boolean;
+  /** Continue from this many seconds (when you swipe back to a clip you left half-way). */
+  resumeAt?: number;
+}) {
   const { state, dispatch } = useStore();
   const creator = useUser(video.creatorId);
   const original = state.videos.find((v) => v.id === video.remixOfId);
@@ -60,6 +83,12 @@ export default function VideoCard({
     p.loop = true;
     p.timeUpdateEventInterval = 0.25;
   });
+
+  // Swiped back to a clip you left half-way: continue where you were.
+  useEffect(() => {
+    if (!active || !resumeAt || resumeAt <= 0) return;
+    seekTo(player, resumeAt);
+  }, [active, resumeAt, player]);
 
   // Feed algorithm: remember how long this video was watched each time it was on screen.
   useEffect(() => {
@@ -216,7 +245,7 @@ export default function VideoCard({
         )}
       </Pressable>
 
-      {!isPhoto && <Progress player={player} active={active} />}
+      {!isPhoto && <Progress player={player} active={active} videoId={video.id} />}
       <LinearGradient colors={['transparent', 'rgba(0,0,0,0.88)']} style={styles.bottomShade} pointerEvents="none" />
 
       {/* The "ticket": Side's info panel for every video. */}

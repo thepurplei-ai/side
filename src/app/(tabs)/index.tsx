@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Backdrop from '@/components/Backdrop';
 import { Body, Button, Card, EmptyState, Notice, Title } from '@/components/ui';
 import { useDockSpace } from '@/components/Dock';
-import VideoFeed, { type FeedItem } from '@/components/VideoFeed';
+import VideoFeed, { type FeedItem, type SwipeInfo } from '@/components/VideoFeed';
 import { CLIP_COLORS } from '@/data/clipColors';
 import { TEMPLATES } from '@/data/seed';
 import { type AppState, useStore } from '@/store/AppStore';
@@ -75,7 +75,7 @@ function makeRound(state: AppState, context: Video[] = []): string[] {
 }
 
 export default function Home() {
-  const { state } = useStore();
+  const { state, dispatch } = useStore();
   const dockSpace = useDockSpace();
   const [page, setPage] = useState<Page>('forYou');
   const [thumb] = useState(() => new Animated.Value(1));
@@ -101,7 +101,9 @@ export default function Home() {
 
   // Live adapting: after every swipe, the videos you haven't reached yet in this round are ranked
   // again with everything you just did. The very next video stays put (it's already loaded).
-  const onSwipe = (i: number) => {
+  const onSwipe = (i: number, info: SwipeInfo) => {
+    // Swiping back to a clip and watching it again is a strong "I liked it".
+    if (info.kind === 'rewatch' && info.prevVideoId) dispatch({ type: 'rewatch', videoId: info.prevVideoId });
     const next = flat[i + 1];
     if (!next) return;
     const round = rounds[next.r];
@@ -109,7 +111,8 @@ export default function Home() {
     const rest = round.slice(next.pos + 1);
     if (rest.length < 2) return;
     const context = flat.slice(Math.max(0, i - 1), i + 2).map((x) => x.video);
-    const reranked = forYouFeed(state, newSeed(), context, new Set(rest)).map((v) => v.id);
+    // After a run of quick skips (mood 'fresh'), the coming clips get more variety and new topics.
+    const reranked = forYouFeed(state, newSeed(), context, new Set(rest), info.mood).map((v) => v.id);
     const missing = rest.filter((id) => !reranked.includes(id)); // e.g. hidden: keep them at the end
     const updated = [...rounds];
     updated[next.r] = [...keep, ...reranked, ...missing];

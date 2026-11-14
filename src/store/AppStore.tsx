@@ -37,6 +37,8 @@ export interface AppState {
   shared: Record<string, true>;
   /** Your clips pinned to the top of your profile (up to 3). */
   pinned: Record<string, true>;
+  /** Clips you swiped back to and watched again (a strong "I liked it" for the feed). */
+  rewatched: Record<string, true>;
   projects: Project[];
   draft?: Draft;
   family: FamilySettings;
@@ -58,6 +60,7 @@ const initialState: AppState = {
   notInterested: {},
   shared: {},
   pinned: {},
+  rewatched: {},
   projects: [],
   family: { enabled: false, children: [] },
   reports: [],
@@ -75,6 +78,7 @@ export type Action =
   | { type: 'notInterested'; videoId: string }
   | { type: 'togglePin'; videoId: string }
   | { type: 'setDraft'; draft: Draft | undefined }
+  | { type: 'rewatch'; videoId: string }
   | { type: 'addComment'; comment: Comment }
   | { type: 'deleteComment'; commentId: string }
   | { type: 'report'; report: Report }
@@ -125,6 +129,8 @@ function reducer(state: AppState, action: Action): AppState {
     }
     case 'recordView':
       return { ...state, watch: { ...state.watch, [action.videoId]: addView(state.watch[action.videoId], action.watchedMs, action.durationSec, Date.now()) } };
+    case 'rewatch':
+      return state.rewatched[action.videoId] ? state : { ...state, rewatched: { ...state.rewatched, [action.videoId]: true } };
     case 'setDraft':
       return { ...state, draft: action.draft };
     case 'togglePin': {
@@ -195,6 +201,7 @@ function toSaved(s: AppState) {
     notInterested: s.notInterested,
     shared: s.shared,
     pinned: s.pinned,
+    rewatched: s.rewatched,
     projects: s.projects,
     family: s.family,
     reports: s.reports,
@@ -231,6 +238,7 @@ function fromSaved(saved: Saved): Partial<AppState> {
     notInterested: saved.notInterested ?? {},
     shared: saved.shared ?? {},
     pinned: saved.pinned ?? {},
+    rewatched: saved.rewatched ?? {},
     projects,
     family: saved.family ?? { enabled: false, children: [] },
     reports: saved.reports ?? [],

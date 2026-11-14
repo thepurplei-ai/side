@@ -15,6 +15,10 @@ them short. Never ask the owner to run terminal commands: run them yourself.
 - `src/ai/recommender.ts`: the For You algorithm v2: TF-IDF fingerprints of each video, long-term +
   right-now taste vectors, Thompson-sampling bandit per topic, quality/freshness/follow, seen penalties,
   MMR mixing. Home re-ranks unseen videos after every swipe. Pure TS. Tested.
+- `src/ai/swipe.ts`: the swipe engine (tested): classifies each swipe (skip / glance / watched / rewatch),
+  mood (3 quick skips → 'fresh': more variety and new topics), adaptive preloading (fast swipers load 3 ahead,
+  back-swipers keep 2 behind), and resume when you swipe back to a clip you left half-way. Used by both
+  VideoFeed files; positions come from `src/components/playback.ts`. Rewatches feed the recommender.
 - `src/ai/profile.ts`: the profile algorithm: Top / Latest / Most remixed clip order with pins, creator
   insights and level, "known for" topics, taste match %, People you may like / Similar creators. Tested.
 - Media pipeline: `src/services/media.ts` (check → copy into app folder → video cover picture) with rules in

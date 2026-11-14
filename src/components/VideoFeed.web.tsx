@@ -3,13 +3,13 @@ import { useCallback, useState } from 'react';
 import { FlatList, LayoutChangeEvent, NativeScrollEvent, NativeSyntheticEvent, View } from 'react-native';
 
 import VideoCard from '@/components/VideoCard';
-import type { Video } from '@/types';
+import { SwipeSession } from '@/ai/swipe';
+import type { FeedItem, SwipeInfo } from '@/components/feedTypes';
+import { playbackDurations, playbackTimes } from '@/components/playback';
 
-export interface FeedItem {
-  /** Unique key: the same video can appear again later in an endless feed. */
-  key: string;
-  video: Video;
-}
+export type { FeedItem, SwipeInfo } from '@/components/feedTypes';
+
+const nowMs = () => Date.now();
 
 /**
  * Web version of the sideways feed (used only for testing in a browser; phones use VideoFeed.tsx).
@@ -31,10 +31,17 @@ export default function VideoFeed({
   active?: boolean;
   onEndReached?: () => void;
   /** Called when a swipe settles on a new video. */
-  onActiveIndexChange?: (index: number) => void;
+  onActiveIndexChange?: (index: number, info: SwipeInfo) => void;
 }) {
   const [size, setSize] = useState({ width: 0, height: 0 });
   const [activeIndex, setActiveIndex] = useState(initialIndex);
+  const [resume, setResume] = useState<{ index: number; time: number }>({ index: -1, time: 0 });
+  const [session] = useState(() => {
+    const s = new SwipeSession();
+    const first = items[initialIndex];
+    if (first) s.enter(initialIndex, first.video.id, first.video.source.durationSec ?? 6, nowMs());
+    return s;
+  });
   const focused = useIsFocused();
   const { width, height } = size;
 
@@ -50,8 +57,13 @@ export default function VideoFeed({
     if (!width) return;
     const i = Math.max(0, Math.min(items.length - 1, Math.round(e.nativeEvent.contentOffset.x / width)));
     if (i !== activeIndex) {
+      const prev = items[activeIndex]?.video;
+      const next = items[i].video;
+      const t = nowMs();
+      const kind = session.enter(i, next.id, playbackDurations.get(next.id) ?? next.source.durationSec ?? 6, t, prev ? playbackTimes.get(prev.id) : undefined);
+      setResume({ index: i, time: session.resumeTime(next.id, t) });
       setActiveIndex(i);
-      onActiveIndexChange?.(i);
+      onActiveIndexChange?.(i, { kind, mood: session.mood(), prevVideoId: prev?.id });
     }
   };
 
@@ -75,6 +87,7 @@ export default function VideoFeed({
               active={active && focused && index === activeIndex}
               // Keep the neighbours ready (loaded and paused) for an instant start.
               preload={Math.abs(index - activeIndex) <= 1}
+              resumeAt={index === resume.index ? resume.time : undefined}
               bottomInset={bottomInset}
             />
           )}
