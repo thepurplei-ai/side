@@ -14,7 +14,7 @@ export default function ProfileHeader({ user, following, likes, videos }: { user
         <Stat n={following} label="Following" />
         <Stat n={user.followers} label="Followers" />
         <Stat n={likes} label="Likes" />
-        <Stat n={videos} label="Videos" />
+        <Stat n={videos} label="Clips" />
       </View>
       {!!user.bio && <Text style={styles.bio}>{user.bio}</Text>}
     </View>

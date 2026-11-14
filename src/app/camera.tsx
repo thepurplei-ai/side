@@ -16,7 +16,7 @@ const MAX_VIDEO_SEC = 30;
 
 /**
  * Opens straight from the camera button in the dock.
- * Take a photo or record a video of yourself, then go on to describe your movie.
+ * Take a photo or record a video of yourself, then go on to describe your clip.
  */
 export default function CameraScreen() {
   const { remixOf, template } = useLocalSearchParams<{ remixOf?: string; template?: string }>();
@@ -111,7 +111,7 @@ export default function CameraScreen() {
     return (
       <SafeAreaView style={styles.permission}>
         <Ionicons name="camera-outline" size={56} color={tint} style={{ alignSelf: 'center' }} />
-        <Text style={styles.permTitle}>Star in your own movie</Text>
+        <Text style={styles.permTitle}>Star in your own clip</Text>
         <Text style={styles.permText}>Side needs the camera so you can film yourself. Photos and videos stay on your phone.</Text>
         {camPerm && !camPerm.canAskAgain ? (
           <Button title="Open settings" icon="settings-outline" onPress={() => Linking.openSettings()} />

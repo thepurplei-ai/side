@@ -83,7 +83,7 @@ export function splitIntoBeats(prompt: string): string[] {
 
 /**
  * Makes the first scene plan for a new video.
- * A one-sentence idea becomes a short three-act movie (opening, action, finale).
+ * A one-sentence idea becomes a short three-part clip (opening, action, finale).
  */
 export function planFromPrompt(prompt: string, style?: string): DirectorPlan {
   const beats = splitIntoBeats(prompt).slice(0, MAX_SCENES);

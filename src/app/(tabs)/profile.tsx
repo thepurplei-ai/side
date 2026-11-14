@@ -6,11 +6,15 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Silk from '@/components/Silk';
 import { useDockSpace } from '@/components/Dock';
+import OwnIdeaCard from '@/components/OwnIdeaCard';
 import ProfileHeader from '@/components/ProfileHeader';
 import { Body, Button, Chip } from '@/components/ui';
 import VideoGrid from '@/components/VideoGrid';
 import { useStore } from '@/store/AppStore';
-import { videosByUser } from '@/store/selectors';
+import { insights, knownFor, MAX_PINS, type ProfileSort } from '@/ai/profile';
+import { CreatorsRow, InsightsCard, KnownFor, SortChips } from '@/components/ProfileParts';
+import { profileClips, suggestedCreators } from '@/store/selectors';
+import type { Video } from '@/types';
 import { colors, radius, space, fonts } from '@/theme';
 
 type Tab = 'videos' | 'saved' | 'liked';
@@ -19,9 +23,23 @@ export default function Profile() {
   const dockSpace = useDockSpace();
   const { state, dispatch } = useStore();
   const [tab, setTab] = useState<Tab>('videos');
+  const [sort, setSort] = useState<ProfileSort>('top');
   const me = state.me!;
   const family = state.family.enabled;
-  const mine = videosByUser(state, me.id);
+  const mine = profileClips(state, me.id, sort);
+  const stats = insights(me, mine, state.comments, state.videos);
+  const suggested = suggestedCreators(state);
+
+  const pinMenu = (v: Video) => {
+    const pinned = !!state.pinned[v.id];
+    if (!pinned && Object.keys(state.pinned).length >= MAX_PINS) {
+      return Alert.alert('Pin limit', `You can pin up to ${MAX_PINS} clips. Unpin one first.`);
+    }
+    Alert.alert(v.title, undefined, [
+      { text: pinned ? 'Unpin from profile' : 'Pin to top of profile', onPress: () => dispatch({ type: 'togglePin', videoId: v.id }) },
+      { text: 'Cancel', style: 'cancel' },
+    ]);
+  };
   const lists = {
     videos: mine,
     saved: state.videos.filter((v) => state.saved[v.id]),
@@ -40,6 +58,7 @@ export default function Profile() {
       <Silk />
       <ScrollView contentContainerStyle={{ padding: space.md, gap: space.md, paddingBottom: dockSpace + space.lg }}>
         <ProfileHeader user={me} following={Object.keys(state.following).length} likes={likes} videos={mine.length} />
+        {!family && <KnownFor tags={knownFor(mine)} />}
 
         <View style={styles.buttons}>
           <Button small title="Edit profile" variant="secondary" icon="create-outline" onPress={() => router.push('/edit-profile')} style={{ flex: 1 }} />
@@ -50,20 +69,37 @@ export default function Profile() {
           <Body dim style={{ textAlign: 'center' }}>Your public videos are hidden while Family Mode is on.</Body>
         ) : (
           <>
+            <InsightsCard insights={stats} />
             <View style={styles.tabs}>
               {(['videos', 'saved', 'liked'] as Tab[]).map((t) => (
-                <Chip key={t} label={t === 'videos' ? `Videos (${lists.videos.length})` : t === 'saved' ? `Saved (${lists.saved.length})` : `Liked (${lists.liked.length})`} selected={tab === t} onPress={() => setTab(t)} />
+                <Chip key={t} label={t === 'videos' ? `Clips (${lists.videos.length})` : t === 'saved' ? `Saved (${lists.saved.length})` : `Liked (${lists.liked.length})`} selected={tab === t} onPress={() => setTab(t)} />
               ))}
             </View>
-            {lists[tab].length === 0 ? (
+            {tab === 'videos' ? (
+              // Your own clips, starting with a plain card to make a new one. Long-press a clip to pin it.
+              <>
+                {lists.videos.length > 1 && <SortChips sort={sort} onChange={setSort} />}
+                <VideoGrid
+                  videos={lists.videos}
+                  listKey={`user:${me.id}`}
+                  leading={<OwnIdeaCard compact style={{ flex: 1 }} />}
+                  pinned={state.pinned}
+                  bestId={stats.bestClipId}
+                  onLongPress={pinMenu}
+                />
+                {lists.videos.length > 0 && <Body dim style={{ textAlign: 'center', fontSize: 12 }}>Press and hold a clip to pin it to the top.</Body>}
+              </>
+            ) : lists[tab].length === 0 ? (
               <Body dim style={{ textAlign: 'center', marginVertical: space.lg }}>
-                {tab === 'videos' ? 'Publish a video from the Studio and it shows up here.' : tab === 'saved' ? 'Tap the bookmark on a video to save it.' : 'Videos you like show up here.'}
+                {tab === 'saved' ? 'Tap the bookmark on a video to save it.' : 'Videos you like show up here.'}
               </Body>
             ) : (
-              <VideoGrid videos={lists[tab]} listKey={tab === 'videos' ? `user:${me.id}` : tab} />
+              <VideoGrid videos={lists[tab]} listKey={tab} />
             )}
           </>
         )}
+
+        {!family && <CreatorsRow title="People you may like" users={suggested} />}
 
         <View style={styles.settings}>
           <Text style={styles.settingsTitle}>Settings</Text>

@@ -1,6 +1,6 @@
 # Side
 
-Be the main character. Side turns your photos, videos and ideas into AI movies, and lets you
+Be the main character. Side turns your photos, videos and ideas into short AI clips, and lets you
 "Create My Version" of videos you love.
 
 Built with Expo (React Native) and TypeScript. Android first, iPhone from the same code.

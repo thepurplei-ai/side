@@ -21,6 +21,9 @@
 - Version 4: smarter For You (video fingerprints, short- and long-term taste, topic bandit,
   variety mixing, live re-ranking after each swipe); sharper demo videos, cover pictures,
   fade-in without black flashes, gliding info panel; purple silk background.
+- Version 5: videos slide sideways; "clips" not movies; plain "Your own idea" card; profile
+  algorithm (Top/Latest/Most remixed, pins, insights and levels, taste match, similar creators);
+  10 creators and 18 clips. Next: real stock footage (needs network approval) and real accounts.
 
 Everything is saved on the phone. Video generation is in **preview mode** (sample clips).
 

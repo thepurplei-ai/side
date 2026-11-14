@@ -1,7 +1,7 @@
 // The shapes of the data Side works with.
 
 /** Built-in demo clips (see src/data/clips.ts). */
-export type ClipKey = 'hero' | 'mars' | 'christmas' | 'fantasy' | 'ocean' | 'city';
+export type ClipKey = 'hero' | 'mars' | 'christmas' | 'fantasy' | 'ocean' | 'city' | 'aurora' | 'desert' | 'neon' | 'forest';
 
 /** Where a video's picture comes from: a built-in clip or a file on the phone / in the cloud. */
 export interface MediaSource {

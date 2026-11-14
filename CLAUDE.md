@@ -1,7 +1,7 @@
 # Side — instructions for Claude Code
 
 Side (working name "WonderReel") is an AI video creation + social app: a TikTok-style feed of AI videos,
-an AI Director that plans and edits multi-scene movies, and "Create My Version" to star in someone
+an AI Director that plans and edits short multi-scene clips (Side makes clips, not movies), and "Create My Version" to star in someone
 else's story with your own photo. Android first, iPhone from the same code.
 
 The owner is learning to code and works from a phone. Explain steps in plain, simple English and keep
@@ -15,6 +15,9 @@ them short. Never ask the owner to run terminal commands: run them yourself.
 - `src/ai/recommender.ts`: the For You algorithm v2: TF-IDF fingerprints of each video, long-term +
   right-now taste vectors, Thompson-sampling bandit per topic, quality/freshness/follow, seen penalties,
   MMR mixing. Home re-ranks unseen videos after every swipe. Pure TS. Tested.
+- `src/ai/profile.ts`: the profile algorithm: Top / Latest / Most remixed clip order with pins, creator
+  insights and level, "known for" topics, taste match %, People you may like / Similar creators. Tested.
+- Plain "Your own idea" card (`src/components/OwnIdeaCard.tsx`) opens a blank Create (`fresh` param).
 - Demo clips 720x1280 + cover pictures (`assets/posters`) made by `scripts/make-sample-videos.sh`.
 - Look: "Purple Silk" (`src/theme.ts`): dark purple silk background (`src/components/Silk.tsx`, add it to every new tab screen), electric violet, a little lemon for highlights, cream, Fraunces serif titles + Manrope.
   Floating dock menu (`src/components/Dock.tsx`) with a violet camera shutter that opens `src/app/camera.tsx`.

@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Silk from '@/components/Silk';
 import { useDockSpace } from '@/components/Dock';
+import OwnIdeaCard from '@/components/OwnIdeaCard';
 import { Avatar, Body, Button, compactNumber, Title } from '@/components/ui';
 import VideoGrid from '@/components/VideoGrid';
 import { CLIP_COLORS } from '@/data/clipColors';
@@ -68,6 +69,7 @@ export default function Discover() {
             <Text style={styles.section}>AI templates</Text>
             <Body dim>Pick a story and star in it. Add your photo on the next screen.</Body>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: space.sm }}>
+              <OwnIdeaCard style={{ width: 150, height: 190 }} />
               {templates.map((t) => (
                 <Pressable
                   key={t.id}

@@ -217,7 +217,7 @@ export default function ProjectScreen() {
             {busy ? (
               <>
                 <Ionicons name="sparkles" size={40} color={colors.primary} />
-                <Text style={styles.placeholderTitle}>Making your movie… {Math.round(project.progress * 100)}%</Text>
+                <Text style={styles.placeholderTitle}>Making your clip… {Math.round(project.progress * 100)}%</Text>
                 <View style={styles.progressTrack}>
                   <View style={[styles.progressFill, { width: `${Math.round(project.progress * 100)}%` }]} />
                 </View>
@@ -226,7 +226,7 @@ export default function ProjectScreen() {
             ) : (
               <>
                 <Ionicons name="film-outline" size={40} color={colors.textDim} />
-                <Text style={styles.placeholderTitle}>{project.status === 'failed' ? 'That did not work' : 'Your movie appears here'}</Text>
+                <Text style={styles.placeholderTitle}>{project.status === 'failed' ? 'That did not work' : 'Your clip appears here'}</Text>
                 {project.error && <Body dim style={{ textAlign: 'center' }}>{project.error}</Body>}
               </>
             )}

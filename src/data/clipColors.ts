@@ -7,5 +7,9 @@ export const CLIP_COLORS: Record<ClipKey, string> = {
   christmas: '#B91C3C',
   fantasy: '#0E7490',
   ocean: '#0A7C82',
-  city: '#BE185D',
+  city: '#4B2F8A',
+  aurora: '#0E7C86',
+  desert: '#C2410C',
+  neon: '#5B3FB8',
+  forest: '#166534',
 };

@@ -9,9 +9,14 @@
       "@/assets/*": [
         "./assets/*"
       ]
-    }
+    },
+    "allowImportingTsExtensions": true,
+    "noEmit": true
   },
-  "exclude": ["test", "node_modules"],
+  "exclude": [
+    "test",
+    "node_modules"
+  ],
   "include": [
     "**/*.ts",
     "**/*.tsx",

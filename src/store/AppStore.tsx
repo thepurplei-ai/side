@@ -27,6 +27,8 @@ export interface AppState {
   watch: Record<string, WatchStat>;
   notInterested: Record<string, true>;
   shared: Record<string, true>;
+  /** Your clips pinned to the top of your profile (up to 3). */
+  pinned: Record<string, true>;
   projects: Project[];
   family: FamilySettings;
   reports: Report[];
@@ -46,6 +48,7 @@ const initialState: AppState = {
   watch: {},
   notInterested: {},
   shared: {},
+  pinned: {},
   projects: [],
   family: { enabled: false, children: [] },
   reports: [],
@@ -61,6 +64,7 @@ export type Action =
   | { type: 'share'; videoId: string }
   | { type: 'recordView'; videoId: string; watchedMs: number; durationSec: number }
   | { type: 'notInterested'; videoId: string }
+  | { type: 'togglePin'; videoId: string }
   | { type: 'addComment'; comment: Comment }
   | { type: 'deleteComment'; commentId: string }
   | { type: 'report'; report: Report }
@@ -111,6 +115,10 @@ function reducer(state: AppState, action: Action): AppState {
     }
     case 'recordView':
       return { ...state, watch: { ...state.watch, [action.videoId]: addView(state.watch[action.videoId], action.watchedMs, action.durationSec, Date.now()) } };
+    case 'togglePin': {
+      if (!state.pinned[action.videoId] && Object.keys(state.pinned).length >= 3) return state;
+      return { ...state, pinned: toggle(state.pinned, action.videoId) };
+    }
     case 'notInterested':
       return { ...state, notInterested: { ...state.notInterested, [action.videoId]: true } };
     case 'share':
@@ -174,6 +182,7 @@ function toSaved(s: AppState) {
     watch: s.watch,
     notInterested: s.notInterested,
     shared: s.shared,
+    pinned: s.pinned,
     projects: s.projects,
     family: s.family,
     reports: s.reports,
@@ -209,6 +218,7 @@ function fromSaved(saved: Saved): Partial<AppState> {
     watch: saved.watch ?? {},
     notInterested: saved.notInterested ?? {},
     shared: saved.shared ?? {},
+    pinned: saved.pinned ?? {},
     projects,
     family: saved.family ?? { enabled: false, children: [] },
     reports: saved.reports ?? [],

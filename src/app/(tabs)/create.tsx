@@ -22,13 +22,13 @@ const IDEAS = [
   'I am a superhero saving someone in New York',
   'I am an astronaut exploring Mars',
   'A magical Christmas adventure with Santa',
-  'I am the main character of a fantasy movie',
+  'I am the hero of a fantasy world',
 ];
 
 export default function Create() {
   const dockSpace = useDockSpace();
   const { state, dispatch } = useStore();
-  const params = useLocalSearchParams<{ remixOf?: string; template?: string; mediaUri?: string; mediaType?: string; at?: string }>();
+  const params = useLocalSearchParams<{ remixOf?: string; template?: string; mediaUri?: string; mediaType?: string; at?: string; fresh?: string }>();
   const family = state.family.enabled;
 
   const original = state.videos.find((v) => v.id === params.remixOf);
@@ -43,10 +43,17 @@ export default function Create() {
   const [error, setError] = useState('');
 
   // Fill the form when opened from "Create My Version" or a template.
-  const formKey = `${original?.id ?? ''}|${template?.id ?? ''}`;
-  const [appliedKey, setAppliedKey] = useState('|');
+  // "Your own idea" cards open a blank form (fresh=…); templates and remixes fill it in.
+  const formKey = `${original?.id ?? ''}|${template?.id ?? ''}|${params.fresh ?? ''}`;
+  const [appliedKey, setAppliedKey] = useState('||');
   if (formKey !== appliedKey) {
     setAppliedKey(formKey);
+    if (params.fresh && !original && !template) {
+      setMedia(undefined);
+      setConsent(false);
+      setIdea('');
+      setStyle('Cinematic');
+    }
     if (original) {
       setIdea(original.prompt);
       setStyle('Cinematic');
@@ -91,7 +98,7 @@ export default function Create() {
     setIdea('');
     setStyle('Cinematic');
     setError('');
-    router.setParams({ remixOf: undefined, template: undefined, mediaUri: undefined, mediaType: undefined, at: undefined });
+    router.setParams({ remixOf: undefined, template: undefined, mediaUri: undefined, mediaType: undefined, at: undefined, fresh: undefined });
   };
 
   const start = () => {
@@ -132,7 +139,7 @@ export default function Create() {
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={[styles.container, { paddingBottom: dockSpace + space.lg }]} keyboardShouldPersistTaps="handled">
           <View style={styles.header}>
-            <Title>{original ? 'Create My Version' : family ? 'New family story' : 'Create'}</Title>
+            <Title>{original ? 'Create My Version' : family ? 'New family story' : template ? 'Create' : 'Your own idea'}</Title>
             {(original || template || idea) && (
               <Pressable onPress={reset} hitSlop={8}>
                 <Text style={{ color: colors.textDim, fontFamily: fonts.bold }}>Clear</Text>
@@ -144,7 +151,7 @@ export default function Create() {
             <Notice
               icon="flask-outline"
               color={colors.warning}
-              text="Preview mode: the AI Director plans your movie, and a sample clip stands in for the final video until the AI video service is connected."
+              text="Preview mode: the AI Director plans your clip, and a sample clip stands in for the final video until the AI video service is connected."
             />
           )}
 
@@ -205,7 +212,7 @@ export default function Create() {
           )}
           {original && <Body dim style={{ fontSize: 13 }}>Your photo becomes the main character. The original creator’s face is never copied into your version.</Body>}
 
-          <Label style={{ marginTop: space.sm }}>2 · Describe your movie</Label>
+          <Label style={{ marginTop: space.sm }}>2 · Describe your clip</Label>
           <TextInput
             style={styles.ideaInput}
             value={idea}
@@ -234,7 +241,7 @@ export default function Create() {
           {!!error && <Notice icon="alert-circle" color={colors.danger} text={error} />}
 
           <Button
-            title="Plan my movie with the AI Director"
+            title="Plan my clip with the AI Director"
             icon="sparkles"
             onPress={start}
             disabled={remixBlocked}

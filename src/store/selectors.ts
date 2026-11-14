@@ -1,6 +1,7 @@
+import { remixCounts, sortProfileClips, suggestCreators, tasteMatch, type ProfileSort } from '@/ai/profile';
 import { rankFeed, type Signals } from '@/ai/recommender';
 import type { AppState } from '@/store/AppStore';
-import type { Video } from '@/types';
+import type { User, Video } from '@/types';
 
 /** Videos anyone can see in the public feed (not hidden or reported by you). */
 export function publicVideos(state: AppState): Video[] {
@@ -71,4 +72,26 @@ export function searchVideos(state: AppState, query: string): Video[] {
       creator?.displayName.toLowerCase().includes(q)
     );
   });
+}
+
+/** A creator's clips in profile order (pinned first, then Top / Latest / Most remixed). */
+export function profileClips(state: AppState, userId: string, sort: ProfileSort): Video[] {
+  const commentCounts: Record<string, number> = {};
+  for (const c of state.comments) commentCounts[c.videoId] = (commentCounts[c.videoId] ?? 0) + 1;
+  return sortProfileClips(videosByUser(state, userId), sort, {
+    now: Date.now(),
+    commentCounts,
+    remixes: remixCounts(state.videos),
+    pinned: userId === state.me?.id ? state.pinned : undefined,
+  });
+}
+
+/** "People you may like" (no `like`) or "Similar creators" (`like` = a creator id). */
+export function suggestedCreators(state: AppState, like?: string, limit?: number): User[] {
+  return suggestCreators(state.users, publicVideos(state), signalsFrom(state), { now: Date.now(), meId: state.me?.id, like, limit });
+}
+
+/** How well a creator matches your taste (0–100), or undefined if we don't know your taste yet. */
+export function creatorMatch(state: AppState, creatorId: string): number | undefined {
+  return tasteMatch(creatorId, publicVideos(state), signalsFrom(state), Date.now());
 }

@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Silk from '@/components/Silk';
 import { useDockSpace } from '@/components/Dock';
+import { openOwnIdea } from '@/components/OwnIdeaCard';
 import { totalDuration } from '@/ai/director';
 import { Button, EmptyState, timeAgo, Title } from '@/components/ui';
 import { CLIP_COLORS } from '@/data/clipColors';
@@ -31,8 +32,11 @@ export default function Studio() {
     <SafeAreaView style={{ flex: 1 }} edges={['top']}>
       <Silk />
       <View style={styles.header}>
-        <Title>Studio</Title>
-        <Text style={styles.count}>{projects.length} {projects.length === 1 ? 'project' : 'projects'}</Text>
+        <View>
+          <Title>Studio</Title>
+          <Text style={styles.count}>{projects.length} {projects.length === 1 ? 'project' : 'projects'}</Text>
+        </View>
+        <Button small title="Your own idea" icon="add" onPress={openOwnIdea} />
       </View>
       {projects.length === 0 ? (
         <EmptyState
@@ -85,7 +89,7 @@ export default function Studio() {
 }
 
 const styles = StyleSheet.create({
-  header: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', paddingHorizontal: space.md, paddingTop: space.md },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space.md, paddingTop: space.md },
   count: { color: colors.textDim, fontFamily: fonts.bold },
   item: {
     flexDirection: 'row', alignItems: 'center', gap: space.md, padding: space.sm, borderRadius: radius.lg,

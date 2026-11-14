@@ -59,7 +59,7 @@ export default function Welcome() {
             <Image source={require('../../assets/images/logo.png')} style={styles.logoImage} accessibilityLabel="side" />
             <Text style={styles.headline}>Be the main character.</Text>
             <Body dim>
-              Turn your photos, videos and ideas into AI movies. Watch what others make, then tap “Create My Version”
+              Turn your photos, videos and ideas into AI clips. Watch what others make, then tap “Create My Version”
               to star in it yourself.
             </Body>
 
@@ -71,7 +71,7 @@ export default function Welcome() {
                 style={styles.input}
                 value={username}
                 onChangeText={setUsername}
-                placeholder="alex.makes.movies"
+                placeholder="alex.makes.clips"
                 placeholderTextColor={colors.textDim}
                 autoCapitalize="none"
                 autoCorrect={false}
