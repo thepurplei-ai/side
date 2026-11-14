@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
-import { Animated, FlatList, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { Animated, FlatList, Image, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Body, Button, Card, EmptyState, Notice, Title } from '@/components/ui';
@@ -147,7 +147,7 @@ export default function Home() {
       />
       )}
       <SafeAreaView edges={['top']} style={styles.topBar} pointerEvents="box-none">
-        <Text style={styles.logo}>Side</Text>
+        <Image source={require('../../../assets/images/logo.png')} style={styles.logo} accessibilityLabel="side" />
         {/* Sliding switch: follows your finger as you swipe sideways. */}
         <View style={styles.switch}>
           <Animated.View style={[styles.switchThumb, { transform: [{ translateX: thumbX }] }]} />
@@ -157,7 +157,7 @@ export default function Home() {
             </Pressable>
           ))}
         </View>
-        <View style={{ width: 52 }} />
+        <View style={{ width: 55 }} />
       </SafeAreaView>
     </View>
   );
@@ -165,7 +165,7 @@ export default function Home() {
 
 const styles = StyleSheet.create({
   topBar: { position: 'absolute', top: 0, left: 0, right: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space.md, paddingTop: space.sm },
-  logo: { width: 52, color: colors.primary, fontFamily: fonts.displayItalic, fontSize: 24, textShadowColor: 'rgba(0,0,0,0.5)', textShadowRadius: 6 },
+  logo: { width: 55, height: 22, resizeMode: 'contain' },
   switch: { flexDirection: 'row', padding: 3, borderRadius: radius.pill, backgroundColor: colors.glass, borderWidth: 1, borderColor: colors.glassBorder, marginTop: space.sm },
   switchThumb: { position: 'absolute', top: 3, left: 3, width: SWITCH_W, bottom: 3, borderRadius: radius.pill, backgroundColor: colors.primary },
   switchButton: { width: SWITCH_W, paddingVertical: 7, alignItems: 'center' },

@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useDockSpace } from '@/components/Dock';
@@ -69,34 +69,18 @@ export default function Create() {
 
   const remixBlocked = !!original && !original.remixAllowed;
 
-  const pick = async (source: 'camera-photo' | 'camera-video' | 'library') => {
+  // Pick a photo or video from the phone. The system photo picker needs no permission.
+  const pickFromGallery = async () => {
     setError('');
     try {
-      if (source === 'library') {
-        const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (!perm.granted) return Alert.alert('Permission needed', 'Allow access to your photos to upload one.');
-        const res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images', 'videos'], quality: 0.8, videoMaxDuration: 60 });
-        if (!res.canceled && res.assets[0]) {
-          const a = res.assets[0];
-          setMedia({ uri: a.uri, type: a.type === 'video' ? 'video' : 'image' });
-          setConsent(false);
-        }
-      } else {
-        const perm = await ImagePicker.requestCameraPermissionsAsync();
-        if (!perm.granted) return Alert.alert('Permission needed', 'Allow camera access to take a photo or video.');
-        const res = await ImagePicker.launchCameraAsync({
-          mediaTypes: source === 'camera-video' ? ['videos'] : ['images'],
-          quality: 0.8,
-          videoMaxDuration: 30,
-          cameraType: ImagePicker.CameraType.front,
-        });
-        if (!res.canceled && res.assets[0]) {
-          setMedia({ uri: res.assets[0].uri, type: source === 'camera-video' ? 'video' : 'image' });
-          setConsent(false);
-        }
+      const res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images', 'videos'], quality: 0.8, videoMaxDuration: 60 });
+      const a = res.canceled ? undefined : res.assets?.[0];
+      if (a?.uri) {
+        setMedia({ uri: a.uri, type: a.type === 'video' ? 'video' : 'image' });
+        setConsent(false);
       }
-    } catch {
-      setError('Could not open the camera or photos. Please try again.');
+    } catch (e) {
+      setError(`Could not open your photos. ${e instanceof Error ? e.message : ''}`.trim());
     }
   };
 
@@ -204,7 +188,7 @@ export default function Create() {
           ) : (
             <View style={styles.mediaButtons}>
               <MediaButton icon="camera" label="Side camera" onPress={openCamera} />
-              <MediaButton icon="images" label="Upload" onPress={() => pick('library')} />
+              <MediaButton icon="images" label="Upload" onPress={pickFromGallery} />
             </View>
           )}
           {media && (

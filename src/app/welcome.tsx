@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Body, Button, Label, Notice } from '@/components/ui';
@@ -56,12 +56,7 @@ export default function Welcome() {
       <SafeAreaView style={{ flex: 1 }}>
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
           <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-            <View style={styles.logoRow}>
-              <View style={styles.logo}>
-                <Text style={styles.logoLetter}>S</Text>
-              </View>
-              <Text style={styles.brand}>Side</Text>
-            </View>
+            <Image source={require('../../assets/images/logo.png')} style={styles.logoImage} accessibilityLabel="side" />
             <Text style={styles.headline}>Be the main character.</Text>
             <Body dim>
               Turn your photos, videos and ideas into AI movies. Watch what others make, then tap “Create My Version”
@@ -114,11 +109,8 @@ export default function Welcome() {
 }
 
 const styles = StyleSheet.create({
+  logoImage: { width: 120, height: 48, resizeMode: 'contain' },
   container: { padding: space.lg, gap: space.md, paddingTop: space.xl },
-  logoRow: { flexDirection: 'row', alignItems: 'center', gap: space.md },
-  logo: { width: 56, height: 56, borderRadius: 18, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center', transform: [{ rotate: '-6deg' }] },
-  brand: { color: colors.primary, fontSize: 44, fontFamily: fonts.displayItalic, letterSpacing: -1 },
-  logoLetter: { color: colors.onPrimary, fontSize: 32, fontFamily: fonts.displayItalic, marginTop: -4 },
   headline: { color: colors.text, fontSize: 34, fontFamily: fonts.display, lineHeight: 40, marginTop: space.md },
   input: {
     backgroundColor: colors.surface, borderRadius: radius.md, borderWidth: 1, borderColor: colors.border,

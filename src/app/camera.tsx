@@ -4,7 +4,7 @@ import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
-import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Button } from '@/components/ui';
@@ -62,6 +62,8 @@ export default function CameraScreen() {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
       const photo = await camera.current.takePictureAsync({ quality: 0.8 });
       if (photo?.uri) goToCreate({ uri: photo.uri, type: 'image' });
+    } catch (e) {
+      Alert.alert('Could not take the photo', e instanceof Error ? e.message : 'Please try again.');
     } finally {
       setBusy(false);
     }
@@ -79,6 +81,8 @@ export default function CameraScreen() {
     try {
       const video = await camera.current.recordAsync({ maxDuration: MAX_VIDEO_SEC });
       if (video?.uri) goToCreate({ uri: video.uri, type: 'video' });
+    } catch (e) {
+      Alert.alert('Could not record the video', e instanceof Error ? e.message : 'Please try again.');
     } finally {
       setRecording(false);
     }
@@ -93,9 +97,13 @@ export default function CameraScreen() {
   };
 
   const openGallery = async () => {
-    const res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images', 'videos'], quality: 0.8, videoMaxDuration: 60 });
-    const a = res.canceled ? undefined : res.assets[0];
-    if (a) goToCreate({ uri: a.uri, type: a.type === 'video' ? 'video' : 'image' });
+    try {
+      const res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images', 'videos'], quality: 0.8, videoMaxDuration: 60 });
+      const a = res.canceled ? undefined : res.assets?.[0];
+      if (a?.uri) goToCreate({ uri: a.uri, type: a.type === 'video' ? 'video' : 'image' });
+    } catch (e) {
+      Alert.alert('Could not open your photos', e instanceof Error ? e.message : 'Please try again.');
+    }
   };
 
   // No permission yet: explain and offer the other ways to create.
