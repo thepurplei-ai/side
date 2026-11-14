@@ -5,7 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import Silk from '@/components/Silk';
+import Backdrop from '@/components/Backdrop';
 import { useDockSpace } from '@/components/Dock';
 import OwnIdeaCard from '@/components/OwnIdeaCard';
 import { Avatar, Body, Button, compactNumber, Title } from '@/components/ui';
@@ -30,7 +30,7 @@ export default function Discover() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={['top']}>
-      <Silk />
+      <Backdrop />
       <ScrollView contentContainerStyle={{ padding: space.md, gap: space.md, paddingBottom: dockSpace + space.lg }} keyboardShouldPersistTaps="handled">
         <Title>Discover</Title>
 
@@ -76,7 +76,7 @@ export default function Discover() {
                   style={[styles.template, { backgroundColor: CLIP_COLORS[t.clip] }]}
                   onPress={() => router.push({ pathname: '/create', params: { template: t.id } })}>
                   <Image source={posterForClip(t.clip)} style={StyleSheet.absoluteFill} resizeMode="cover" />
-                  <LinearGradient colors={['rgba(26,15,46,0.1)', 'rgba(26,15,46,0.85)']} style={StyleSheet.absoluteFill} />
+                  <LinearGradient colors={['rgba(7,22,27,0.1)', 'rgba(7,22,27,0.88)']} style={StyleSheet.absoluteFill} />
                   <Ionicons name="sparkles" size={22} color="#fff" />
                   <View>
                     <Text style={styles.templateTitle}>{t.title}</Text>

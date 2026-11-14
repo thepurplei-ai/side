@@ -59,7 +59,7 @@ export function KnownFor({ tags, match }: { tags: string[]; match?: number }) {
     <View style={styles.knownRow}>
       {match !== undefined && (
         <View style={styles.match}>
-          <Ionicons name="sparkles" size={13} color={colors.lemon} />
+          <Ionicons name="sparkles" size={13} color={colors.highlight} />
           <Text style={styles.matchText}>{match}% match with your taste</Text>
         </View>
       )}
@@ -118,14 +118,14 @@ const styles = StyleSheet.create({
   levelText: { color: colors.onPrimary, fontFamily: fonts.heavy, fontSize: 12 },
   dim: { color: colors.textDim, fontFamily: fonts.regular, fontSize: 13 },
   track: { height: 6, borderRadius: 3, backgroundColor: colors.surface2, overflow: 'hidden' },
-  fill: { height: 6, backgroundColor: colors.lemon },
+  fill: { height: 6, backgroundColor: colors.highlight },
   statsRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 },
   stat: { alignItems: 'center', flex: 1 },
   statN: { color: colors.text, fontFamily: fonts.heavy, fontSize: 17 },
   statLabel: { color: colors.textDim, fontFamily: fonts.regular, fontSize: 11.5 },
   knownRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 6 },
-  match: { flexDirection: 'row', alignItems: 'center', gap: 4, borderWidth: 1, borderColor: colors.lemon, borderRadius: radius.pill, paddingVertical: 4, paddingHorizontal: 10 },
-  matchText: { color: colors.lemon, fontFamily: fonts.bold, fontSize: 12 },
+  match: { flexDirection: 'row', alignItems: 'center', gap: 4, borderWidth: 1, borderColor: colors.highlight, borderRadius: radius.pill, paddingVertical: 4, paddingHorizontal: 10 },
+  matchText: { color: colors.highlight, fontFamily: fonts.bold, fontSize: 12 },
   tag: { color: colors.text, fontFamily: fonts.bold, fontSize: 12, backgroundColor: colors.surface2, paddingVertical: 5, paddingHorizontal: 10, borderRadius: radius.pill, overflow: 'hidden' },
   sorts: { flexDirection: 'row', gap: space.sm, justifyContent: 'center', flexWrap: 'wrap' },
   sectionTitle: { color: colors.text, fontFamily: fonts.display, fontSize: 19 },

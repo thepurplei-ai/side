@@ -26,6 +26,7 @@
   10 creators and 18 clips. Next: real stock footage (needs network approval) and real accounts.
 - Version 6: post your own photos and videos as clips (camera preview, checks, saved copies, cover
   pictures, captions and #tags); fixed camera hand-over and sideways paging drift.
+- Version 7: new "Deep Ocean" colors; native page swiper with no peeking at the next clip.
 
 Everything is saved on the phone. Video generation is in **preview mode** (sample clips).
 

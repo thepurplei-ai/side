@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import Silk from '@/components/Silk';
+import Backdrop from '@/components/Backdrop';
 import { useDockSpace } from '@/components/Dock';
 import OwnIdeaCard from '@/components/OwnIdeaCard';
 import ProfileHeader from '@/components/ProfileHeader';
@@ -55,7 +55,7 @@ export default function Profile() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={['top']}>
-      <Silk />
+      <Backdrop />
       <ScrollView contentContainerStyle={{ padding: space.md, gap: space.md, paddingBottom: dockSpace + space.lg }}>
         <ProfileHeader user={me} following={Object.keys(state.following).length} likes={likes} videos={mine.length} />
         {!family && <KnownFor tags={knownFor(mine)} />}

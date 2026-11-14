@@ -9,7 +9,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { planFromPrompt, STYLES } from '@/ai/director';
 import { generator } from '@/ai/generator';
 import { useDockSpace } from '@/components/Dock';
-import Silk from '@/components/Silk';
+import Backdrop from '@/components/Backdrop';
 import { Body, Button, Chip, Label, Notice, Title } from '@/components/ui';
 import { TEMPLATES } from '@/data/seed';
 import { importMedia } from '@/services/media';
@@ -223,7 +223,7 @@ export default function Create() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={['top']}>
-      <Silk />
+      <Backdrop />
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={[styles.container, { paddingBottom: dockSpace + space.lg }]} keyboardShouldPersistTaps="handled">
           <View style={styles.header}>
@@ -403,7 +403,7 @@ const styles = StyleSheet.create({
   remixTitle: { color: colors.text, fontFamily: fonts.heavy, fontSize: 16 },
   remixMeta: { color: colors.textDim, fontSize: 13, fontFamily: fonts.regular },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
-  tag: { color: colors.lemon, fontFamily: fonts.bold, fontSize: 13 },
+  tag: { color: colors.highlight, fontFamily: fonts.bold, fontSize: 13 },
   mediaButtons: { flexDirection: 'row', gap: space.sm },
   mediaButton: {
     flex: 1, height: 120, borderRadius: radius.lg, backgroundColor: colors.surface, borderWidth: 1.5,

@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
   },
   chipText: { color: colors.textDim, fontFamily: fonts.bold, fontSize: 14 },
   title: { color: colors.text, fontSize: 30, fontFamily: fonts.display, letterSpacing: -0.5 },
-  label: { color: colors.lemon, fontSize: 12, fontFamily: fonts.heavy, textTransform: 'uppercase', letterSpacing: 1.6 },
+  label: { color: colors.highlight, fontSize: 12, fontFamily: fonts.heavy, textTransform: 'uppercase', letterSpacing: 1.6 },
   body: { color: colors.text, fontSize: 15, lineHeight: 22, fontFamily: fonts.regular },
   card: { backgroundColor: colors.surface, borderRadius: radius.lg, padding: space.md, borderWidth: 1, borderColor: colors.border },
   notice: {

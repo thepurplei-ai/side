@@ -36,7 +36,7 @@ export default function VideoGrid({
           {posterFor(v.source) !== undefined && <Image source={posterFor(v.source)} style={StyleSheet.absoluteFill} resizeMode="cover" />}
           <LinearGradient colors={['rgba(0,0,0,0.45)', 'transparent', 'rgba(0,0,0,0.55)']} style={StyleSheet.absoluteFill} />
           <View style={styles.badges}>
-            {pinned?.[v.id] && <Ionicons name="pin" size={14} color={colors.lemon} />}
+            {pinned?.[v.id] && <Ionicons name="pin" size={14} color={colors.highlight} />}
             {bestId === v.id && <Text style={styles.best}>BEST</Text>}
           </View>
           <Text style={styles.tileTitle} numberOfLines={3}>{v.title}</Text>

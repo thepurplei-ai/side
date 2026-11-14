@@ -1,6 +1,6 @@
 """Makes the side logo and app icons (run: python3 scripts/make-icons.py).
 
-The logo is the word "side" in lowercase, followed by a violet dot: "side."
+The logo is the word "side" in lowercase, followed by an aquamarine dot: "side."
 """
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import os
@@ -8,8 +8,8 @@ import os
 HERE = os.path.dirname(__file__)
 OUT = os.path.join(HERE, '..', 'assets', 'images')
 FONT = os.path.join(HERE, '..', 'node_modules', '@expo-google-fonts', 'manrope', '800ExtraBold', 'Manrope_800ExtraBold.ttf')
-CREAM, VIOLET = (247, 240, 227), (123, 104, 255)
-TOP, BOTTOM = (52, 28, 96), (22, 12, 40)
+CREAM, AQUA = (234, 246, 244), (45, 225, 194)
+TOP, BOTTOM = (14, 53, 64), (5, 16, 21)
 
 
 def gradient(size):
@@ -22,7 +22,7 @@ def gradient(size):
     return img
 
 
-def wordmark(height, color=CREAM, dot=VIOLET):
+def wordmark(height, color=CREAM, dot=AQUA):
     """Draws "side" followed by a round violet dot. Returns a tight transparent image."""
     font = ImageFont.truetype(FONT, int(height))
     pad = int(height * 0.6)

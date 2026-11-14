@@ -23,10 +23,12 @@ them short. Never ask the owner to run terminal commands: run them yourself.
   "Transform with AI". Photo posts show with a slow zoom; wide videos are shown whole on a blurred copy.
 - Plain "Your own idea" card (`src/components/OwnIdeaCard.tsx`) opens a blank Create (`fresh` param).
 - Demo clips 720x1280 + cover pictures (`assets/posters`) made by `scripts/make-sample-videos.sh`.
-- Look: "Purple Silk" (`src/theme.ts`): dark purple silk background (`src/components/Silk.tsx`, add it to every new tab screen), electric violet, a little lemon for highlights, cream, Fraunces serif titles + Manrope.
+- Look: "Deep Ocean" (`src/theme.ts`): deep sea-blue backdrop (`src/components/Backdrop.tsx`, add it to every new tab screen), aquamarine buttons, a warm coral `highlight` for small touches, off-white text, Fraunces serif titles + Manrope.
   Floating dock menu (`src/components/Dock.tsx`) with a violet camera shutter that opens `src/app/camera.tsx`.
-  Videos show a "ticket" info panel and a lemon progress line, not a side icon rail.
-- Home: videos slide sideways (left = next), one per swipe (`src/components/VideoFeed.tsx`). Following / For You is a tap switch; tapping For You again refreshes.
+  Videos show a "ticket" info panel and a coral progress line, not a side icon rail.
+- Home: videos slide sideways (left = next), one per swipe. Phones use the native page swiper
+  (`src/components/VideoFeed.tsx`, react-native-pager-view) with a black veil so nothing of the next clip
+  shows; `VideoFeed.web.tsx` is a FlatList copy for browser tests only. Following / For You is a tap switch; tapping For You again refreshes.
 - `src/ai/generator.ts`: `VideoGenerator` interface. `PreviewGenerator` returns sample clips until a real
   AI video service is connected. Screens only use the interface.
 - `src/services/moderation.ts`: on-phone safety checks (pure TS). Tested.

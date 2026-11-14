@@ -21,7 +21,7 @@
     "android": {
       "package": "com.thepurpleiai.side",
       "adaptiveIcon": {
-        "backgroundColor": "#1A0F2E",
+        "backgroundColor": "#07161B",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
@@ -36,7 +36,7 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#1A0F2E",
+          "backgroundColor": "#07161B",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 120
         }
@@ -64,7 +64,7 @@
       "typedRoutes": true,
       "reactCompiler": true
     },
-    "backgroundColor": "#1A0F2E",
+    "backgroundColor": "#07161B",
     "owner": "thepurplei_ai",
     "web": {
       "output": "single",

@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 import { FlatList, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import Silk from '@/components/Silk';
+import Backdrop from '@/components/Backdrop';
 import { useDockSpace } from '@/components/Dock';
 import { openOwnIdea } from '@/components/OwnIdeaCard';
 import { totalDuration } from '@/ai/director';
@@ -30,7 +30,7 @@ export default function Studio() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={['top']}>
-      <Silk />
+      <Backdrop />
       <View style={styles.header}>
         <View>
           <Title>Studio</Title>
