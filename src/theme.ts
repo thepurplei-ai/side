@@ -1,35 +1,35 @@
-// side's look: "Deep Ocean". Deep sea-blue screens, aquamarine buttons, a warm coral touch for small
-// highlights, off-white text, and a serif display font for titles.
+// side's look: "Monochrome Studio". Pure black and white, with one red "recording" dot (logo, progress line,
+// recording, likes). The clips bring the color. Serif display font for titles.
 // Change colours and fonts here to restyle the whole app.
 export const colors = {
-  bg: '#07161B',
-  surface: '#0D242B',
-  surface2: '#13313A',
-  border: '#1E4550',
-  text: '#EAF6F4',
-  textDim: '#9DBBBD',
-  /** Aquamarine: main buttons, the camera shutter, highlights. */
-  primary: '#2DE1C2',
-  primaryDim: '#0E3B37',
-  /** Text and icons on top of aquamarine or family-blue buttons. */
-  onPrimary: '#032622',
-  /** Coral: a small warm touch (section labels, progress line, "starring"). */
-  highlight: '#FF9A7A',
-  /** Rose: likes and hearts. */
-  accent: '#FF5D73',
+  bg: '#000000',
+  surface: '#111111',
+  surface2: '#1B1B1B',
+  border: '#2A2A2A',
+  text: '#FFFFFF',
+  textDim: '#9A9A9A',
+  /** White: main buttons and the camera shutter. Text on them is black. */
+  primary: '#FFFFFF',
+  primaryDim: '#1F1F1F',
+  /** Text and icons on top of white or family-blue buttons. */
+  onPrimary: '#000000',
+  /** The one red "recording" dot: logo dot, progress line, recording, small highlights. */
+  highlight: '#FF3B30',
+  /** Likes and hearts: the same red. */
+  accent: '#FF3B30',
   success: '#5EE3A1',
   warning: '#FFB86B',
-  danger: '#FF7A7A',
-  family: '#7AB8FF',
+  danger: '#FF5A52',
+  family: '#8EC5FF',
   /** See-through panels that sit on top of videos. */
-  glass: 'rgba(7,22,27,0.76)',
-  glassBorder: 'rgba(234,246,244,0.14)',
+  glass: 'rgba(0,0,0,0.72)',
+  glassBorder: 'rgba(255,255,255,0.14)',
 } as const;
 
-/** The deep-ocean backdrop: light from above fading into deep water, with soft bands. */
+/** A very soft studio light from the top, fading into pure black. */
 export const backdrop = {
-  colors: ['#0E3540', '#07161B', '#0A2630', '#051015', '#0A222A'],
-  locations: [0, 0.32, 0.55, 0.8, 1],
+  colors: ['#1C1C1C', '#000000', '#0A0A0A', '#000000', '#050505'],
+  locations: [0, 0.35, 0.6, 0.85, 1],
 } as const;
 
 export const fonts = {

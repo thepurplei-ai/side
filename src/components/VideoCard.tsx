@@ -217,7 +217,7 @@ export default function VideoCard({
       </Pressable>
 
       {!isPhoto && <Progress player={player} active={active} />}
-      <LinearGradient colors={['transparent', 'rgba(7,22,27,0.88)']} style={styles.bottomShade} pointerEvents="none" />
+      <LinearGradient colors={['transparent', 'rgba(0,0,0,0.88)']} style={styles.bottomShade} pointerEvents="none" />
 
       {/* The "ticket": Side's info panel for every video. */}
       <Animated.View

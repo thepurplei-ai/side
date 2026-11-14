@@ -76,7 +76,7 @@ export default function Discover() {
                   style={[styles.template, { backgroundColor: CLIP_COLORS[t.clip] }]}
                   onPress={() => router.push({ pathname: '/create', params: { template: t.id } })}>
                   <Image source={posterForClip(t.clip)} style={StyleSheet.absoluteFill} resizeMode="cover" />
-                  <LinearGradient colors={['rgba(7,22,27,0.1)', 'rgba(7,22,27,0.88)']} style={StyleSheet.absoluteFill} />
+                  <LinearGradient colors={['rgba(0,0,0,0.1)', 'rgba(0,0,0,0.88)']} style={StyleSheet.absoluteFill} />
                   <Ionicons name="sparkles" size={22} color="#fff" />
                   <View>
                     <Text style={styles.templateTitle}>{t.title}</Text>

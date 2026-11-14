@@ -27,6 +27,7 @@
 - Version 6: post your own photos and videos as clips (camera preview, checks, saved copies, cover
   pictures, captions and #tags); fixed camera hand-over and sideways paging drift.
 - Version 7: new "Deep Ocean" colors; native page swiper with no peeking at the next clip.
+- Version 8: "Monochrome Studio" look (black and white with one red dot), chosen from 8 options.
 
 Everything is saved on the phone. Video generation is in **preview mode** (sample clips).
 
