@@ -1,0 +1,75 @@
+{
+  "expo": {
+    "name": "Side",
+    "slug": "side",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "side",
+    "userInterfaceStyle": "dark",
+    "ios": {
+      "bundleIdentifier": "com.thepurpleiai.side",
+      "supportsTablet": false,
+      "icon": "./assets/images/icon.png",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Side uses the camera so you can star in your own AI videos.",
+        "NSMicrophoneUsageDescription": "Side records sound when you film a video for your AI movie.",
+        "NSPhotoLibraryUsageDescription": "Side lets you pick photos and videos to turn into AI movies.",
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "com.thepurpleiai.side",
+      "adaptiveIcon": {
+        "backgroundColor": "#07060B",
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#07060B",
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 120
+        }
+      ],
+      "expo-video",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Side lets you pick photos and videos to turn into AI movies.",
+          "cameraPermission": "Side uses the camera so you can star in your own AI videos.",
+          "microphonePermission": "Side records sound when you film a video for your AI movie."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "backgroundColor": "#07060B",
+    "owner": "thepurplei_ai",
+    "web": {
+      "output": "single",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "extra": {
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "8d1568b3-119f-4b2f-9957-96e9ab4c423f"
+      }
+    }
+  }
+}
