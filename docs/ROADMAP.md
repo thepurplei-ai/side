@@ -15,6 +15,9 @@
   scrolling with the next video preloaded; double-tap to like; "Not interested"; a For You
   algorithm that learns from watch time, likes, saves, follows and skips, mixes topics and
   keeps some new things in the feed; endless feed and pull-down to refresh.
+- Version 3: own design ("Midnight Cinema": night-blue and gold, serif titles, floating dock,
+  ticket panel on videos); the camera button opens Side's own camera (photo or video, flip,
+  light, gallery, or write an idea).
 
 Everything is saved on the phone. Video generation is in **preview mode** (sample clips).
 

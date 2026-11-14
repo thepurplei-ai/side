@@ -6,7 +6,7 @@ import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 
 import { Avatar, Body, Button, Card, Label, Notice, Title } from '@/components/ui';
 import { checkText } from '@/services/moderation';
 import { hashPin, newId, useStore } from '@/store/AppStore';
-import { colors, radius, space } from '@/theme';
+import { colors, radius, space, fonts } from '@/theme';
 
 const CHILD_COLORS = ['#38BDF8', '#34D399', '#FBBF24', '#A78BFA', '#FB7185'];
 
@@ -135,5 +135,5 @@ const styles = StyleSheet.create({
     color: colors.text, fontSize: 20, padding: space.md, letterSpacing: 6, textAlign: 'center',
   },
   child: { flexDirection: 'row', alignItems: 'center', gap: space.md },
-  childName: { color: colors.text, fontWeight: '700', fontSize: 16, flex: 1 },
+  childName: { color: colors.text, fontFamily: fonts.bold, fontSize: 16, flex: 1 },
 });

@@ -5,13 +5,14 @@ import { useState } from 'react';
 import { Alert, Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { useDockSpace } from '@/components/Dock';
 import { Body, Button, Chip, Label, Notice, Title } from '@/components/ui';
 import { planFromPrompt, STYLES } from '@/ai/director';
 import { generator } from '@/ai/generator';
 import { TEMPLATES } from '@/data/seed';
 import { checkText } from '@/services/moderation';
 import { newId, useStore, useUser } from '@/store/AppStore';
-import { colors, radius, space } from '@/theme';
+import { colors, radius, space, fonts } from '@/theme';
 import type { Project } from '@/types';
 
 type Media = { uri: string; type: 'image' | 'video' };
@@ -24,8 +25,9 @@ const IDEAS = [
 ];
 
 export default function Create() {
+  const dockSpace = useDockSpace();
   const { state, dispatch } = useStore();
-  const params = useLocalSearchParams<{ remixOf?: string; template?: string }>();
+  const params = useLocalSearchParams<{ remixOf?: string; template?: string; mediaUri?: string; mediaType?: string; at?: string }>();
   const family = state.family.enabled;
 
   const original = state.videos.find((v) => v.id === params.remixOf);
@@ -53,6 +55,17 @@ export default function Create() {
     }
     setError('');
   }
+
+  // A photo or video just taken with the Side camera.
+  const mediaKey = params.mediaUri ? `${params.mediaUri}|${params.at ?? ''}` : '';
+  const [appliedMedia, setAppliedMedia] = useState('');
+  if (mediaKey && mediaKey !== appliedMedia) {
+    setAppliedMedia(mediaKey);
+    setMedia({ uri: params.mediaUri!, type: params.mediaType === 'video' ? 'video' : 'image' });
+    setConsent(false);
+  }
+
+  const openCamera = () => router.push({ pathname: '/camera', params: { remixOf: params.remixOf, template: params.template } });
 
   const remixBlocked = !!original && !original.remixAllowed;
 
@@ -93,7 +106,7 @@ export default function Create() {
     setIdea('');
     setStyle('Cinematic');
     setError('');
-    router.setParams({ remixOf: undefined, template: undefined });
+    router.setParams({ remixOf: undefined, template: undefined, mediaUri: undefined, mediaType: undefined, at: undefined });
   };
 
   const start = () => {
@@ -131,12 +144,12 @@ export default function Create() {
   return (
     <SafeAreaView style={{ flex: 1 }} edges={['top']}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerStyle={[styles.container, { paddingBottom: dockSpace + space.lg }]} keyboardShouldPersistTaps="handled">
           <View style={styles.header}>
             <Title>{original ? 'Create My Version' : family ? 'New family story' : 'Create'}</Title>
             {(original || template || idea) && (
               <Pressable onPress={reset} hitSlop={8}>
-                <Text style={{ color: colors.textDim, fontWeight: '700' }}>Clear</Text>
+                <Text style={{ color: colors.textDim, fontFamily: fonts.bold }}>Clear</Text>
               </Pressable>
             )}
           </View>
@@ -190,8 +203,7 @@ export default function Create() {
             </View>
           ) : (
             <View style={styles.mediaButtons}>
-              <MediaButton icon="camera" label="Photo" onPress={() => pick('camera-photo')} />
-              <MediaButton icon="videocam" label="Video" onPress={() => pick('camera-video')} />
+              <MediaButton icon="camera" label="Side camera" onPress={openCamera} />
               <MediaButton icon="images" label="Upload" onPress={() => pick('library')} />
             </View>
           )}
@@ -265,7 +277,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row', gap: space.sm, alignItems: 'center', padding: space.md, borderRadius: radius.md,
     backgroundColor: colors.primaryDim, borderWidth: 1, borderColor: colors.primary,
   },
-  remixTitle: { color: colors.text, fontWeight: '800', fontSize: 16 },
+  remixTitle: { color: colors.text, fontFamily: fonts.heavy, fontSize: 16 },
   remixMeta: { color: colors.textDim, fontSize: 13 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
   mediaButtons: { flexDirection: 'row', gap: space.sm },
@@ -273,7 +285,7 @@ const styles = StyleSheet.create({
     flex: 1, aspectRatio: 1, borderRadius: radius.lg, backgroundColor: colors.surface, borderWidth: 1,
     borderColor: colors.border, borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center', gap: 6,
   },
-  mediaLabel: { color: colors.text, fontWeight: '700' },
+  mediaLabel: { color: colors.text, fontFamily: fonts.bold },
   mediaRow: { flexDirection: 'row', gap: space.md, alignItems: 'center' },
   thumb: { width: 90, height: 120, borderRadius: radius.md, backgroundColor: colors.surface2 },
   videoThumb: { alignItems: 'center', justifyContent: 'center' },

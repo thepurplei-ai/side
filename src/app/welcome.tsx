@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Body, Button, Label, Notice } from '@/components/ui';
 import { checkText } from '@/services/moderation';
 import { newId, useStore } from '@/store/AppStore';
-import { colors, radius, space } from '@/theme';
+import { colors, radius, space, fonts } from '@/theme';
 
 const AVATAR_COLORS = ['#FF3D7F', '#8B5CF6', '#38BDF8', '#F59E0B', '#34D399', '#F87171'];
 
@@ -52,13 +52,13 @@ export default function Welcome() {
   };
 
   return (
-    <LinearGradient colors={['#2A0E3A', colors.bg, colors.bg]} style={{ flex: 1 }}>
+    <LinearGradient colors={['#221B4A', colors.bg, colors.bg]} style={{ flex: 1 }}>
       <SafeAreaView style={{ flex: 1 }}>
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
           <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
             <View style={styles.logoRow}>
               <View style={styles.logo}>
-                <Ionicons name="sparkles" size={30} color="#fff" />
+                <Text style={styles.logoLetter}>S</Text>
               </View>
               <Text style={styles.brand}>Side</Text>
             </View>
@@ -116,9 +116,10 @@ export default function Welcome() {
 const styles = StyleSheet.create({
   container: { padding: space.lg, gap: space.md, paddingTop: space.xl },
   logoRow: { flexDirection: 'row', alignItems: 'center', gap: space.md },
-  logo: { width: 56, height: 56, borderRadius: 18, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center' },
-  brand: { color: colors.text, fontSize: 40, fontWeight: '900', letterSpacing: -1 },
-  headline: { color: colors.text, fontSize: 30, fontWeight: '800', marginTop: space.md },
+  logo: { width: 56, height: 56, borderRadius: 18, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center', transform: [{ rotate: '-6deg' }] },
+  brand: { color: colors.primary, fontSize: 44, fontFamily: fonts.displayItalic, letterSpacing: -1 },
+  logoLetter: { color: colors.onPrimary, fontSize: 32, fontFamily: fonts.displayItalic, marginTop: -4 },
+  headline: { color: colors.text, fontSize: 34, fontFamily: fonts.display, lineHeight: 40, marginTop: space.md },
   input: {
     backgroundColor: colors.surface, borderRadius: radius.md, borderWidth: 1, borderColor: colors.border,
     color: colors.text, fontSize: 17, paddingHorizontal: space.md, paddingVertical: 14,

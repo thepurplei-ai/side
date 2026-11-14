@@ -8,7 +8,7 @@ import { REPORT_REASONS } from '@/components/VideoCard';
 import { Avatar, Body, timeAgo } from '@/components/ui';
 import { checkComment } from '@/services/moderation';
 import { newId, useStore } from '@/store/AppStore';
-import { colors, radius, space } from '@/theme';
+import { colors, radius, space, fonts } from '@/theme';
 import type { Comment } from '@/types';
 
 export default function Comments() {
@@ -70,7 +70,7 @@ export default function Comments() {
         <View style={styles.inputRow}>
           <TextInput style={styles.input} value={text} onChangeText={setText} placeholder="Add a kind comment…" placeholderTextColor={colors.textDim} maxLength={300} onSubmitEditing={post} returnKeyType="send" />
           <Pressable style={styles.send} onPress={post}>
-            <Ionicons name="arrow-up" size={20} color="#fff" />
+            <Ionicons name="arrow-up" size={20} color={colors.onPrimary} />
           </Pressable>
         </View>
       </KeyboardAvoidingView>
@@ -80,7 +80,7 @@ export default function Comments() {
 
 const styles = StyleSheet.create({
   comment: { flexDirection: 'row', gap: space.sm, alignItems: 'flex-start' },
-  name: { color: colors.textDim, fontWeight: '700', fontSize: 13 },
+  name: { color: colors.textDim, fontFamily: fonts.bold, fontSize: 13 },
   time: { fontWeight: '400' },
   text: { color: colors.text, fontSize: 15, marginTop: 2 },
   error: { color: colors.danger, paddingHorizontal: space.md },

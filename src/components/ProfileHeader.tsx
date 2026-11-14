@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
 import { Avatar, compactNumber } from '@/components/ui';
-import { colors, space } from '@/theme';
+import { colors, space, fonts } from '@/theme';
 import type { User } from '@/types';
 
 export default function ProfileHeader({ user, following, likes, videos }: { user: User; following: number; likes: number; videos: number }) {
@@ -32,10 +32,10 @@ function Stat({ n, label }: { n: number; label: string }) {
 
 const styles = StyleSheet.create({
   wrap: { alignItems: 'center', gap: 6 },
-  name: { color: colors.text, fontSize: 22, fontWeight: '900', marginTop: space.sm },
+  name: { color: colors.text, fontSize: 26, fontFamily: fonts.display, marginTop: space.sm },
   username: { color: colors.textDim, fontSize: 15 },
   stats: { flexDirection: 'row', gap: space.lg, marginTop: space.sm },
-  statN: { color: colors.text, fontSize: 18, fontWeight: '900' },
+  statN: { color: colors.text, fontSize: 18, fontFamily: fonts.heavy },
   statLabel: { color: colors.textDim, fontSize: 12 },
   bio: { color: colors.text, textAlign: 'center', marginTop: space.sm, paddingHorizontal: space.lg },
 });

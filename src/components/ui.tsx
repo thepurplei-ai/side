@@ -2,14 +2,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { ReactNode } from 'react';
 import { ActivityIndicator, Pressable, StyleProp, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 
-import { colors, radius, space } from '@/theme';
+import { colors, radius, space, fonts } from '@/theme';
 
 export type IconName = keyof typeof Ionicons.glyphMap;
 
 export function Avatar({ name, color, size = 40, uri }: { name: string; color: string; size?: number; uri?: string }) {
   return (
-    <View style={[styles.avatar, { width: size, height: size, borderRadius: size / 2, backgroundColor: color }]}>
-      <Text style={{ color: '#fff', fontWeight: '800', fontSize: size * 0.42 }}>{name.charAt(0).toUpperCase()}</Text>
+    <View style={[styles.avatar, { width: size, height: size, borderRadius: size * 0.32, backgroundColor: color }]}>
+      <Text style={{ color: '#fff', fontFamily: fonts.display, fontSize: size * 0.42 }}>{name.charAt(0).toUpperCase()}</Text>
     </View>
   );
 }
@@ -27,7 +27,7 @@ export function Button({
   small?: boolean;
 }) {
   const bg = { primary: colors.primary, secondary: colors.surface2, ghost: 'transparent', danger: '#3B1418', family: colors.family }[variant];
-  const fg = variant === 'danger' ? colors.danger : variant === 'family' ? '#04121C' : colors.text;
+  const fg = variant === 'danger' ? colors.danger : variant === 'primary' || variant === 'family' ? colors.onPrimary : colors.text;
   return (
     <Pressable
       accessibilityRole="button"
@@ -57,7 +57,7 @@ export function Chip({ label, selected, onPress, color = colors.primary }: { lab
     <Pressable
       onPress={onPress}
       style={[styles.chip, selected && { backgroundColor: color, borderColor: color }]}>
-      <Text style={[styles.chipText, selected && { color: '#fff' }]}>{label}</Text>
+      <Text style={[styles.chipText, selected && { color: colors.onPrimary }]}>{label}</Text>
     </Pressable>
   );
 }
@@ -113,26 +113,27 @@ export function timeAgo(ts: number): string {
 }
 
 const styles = StyleSheet.create({
-  avatar: { alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: 'rgba(255,255,255,0.85)' },
+  // Rounded squares instead of circles: part of Side's own look.
+  avatar: { alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: colors.glassBorder },
   button: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space.sm,
     paddingVertical: 14, paddingHorizontal: space.lg, borderRadius: radius.pill, minHeight: 50,
   },
   buttonSmall: { paddingVertical: 8, paddingHorizontal: space.md, minHeight: 36 },
-  buttonText: { fontSize: 16, fontWeight: '700' },
+  buttonText: { fontSize: 16, fontFamily: fonts.heavy, letterSpacing: 0.2 },
   chip: {
     paddingVertical: 8, paddingHorizontal: 14, borderRadius: radius.pill,
     borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface,
   },
-  chipText: { color: colors.textDim, fontWeight: '600', fontSize: 14 },
-  title: { color: colors.text, fontSize: 26, fontWeight: '800' },
-  label: { color: colors.textDim, fontSize: 13, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.8 },
-  body: { color: colors.text, fontSize: 15, lineHeight: 21 },
+  chipText: { color: colors.textDim, fontFamily: fonts.bold, fontSize: 14 },
+  title: { color: colors.text, fontSize: 30, fontFamily: fonts.display, letterSpacing: -0.5 },
+  label: { color: colors.primary, fontSize: 12, fontFamily: fonts.heavy, textTransform: 'uppercase', letterSpacing: 1.6 },
+  body: { color: colors.text, fontSize: 15, lineHeight: 22, fontFamily: fonts.regular },
   card: { backgroundColor: colors.surface, borderRadius: radius.lg, padding: space.md, borderWidth: 1, borderColor: colors.border },
   notice: {
     flexDirection: 'row', gap: space.sm, alignItems: 'flex-start', padding: space.md,
     borderRadius: radius.md, borderWidth: 1, backgroundColor: colors.surface,
   },
-  noticeText: { color: colors.text, fontSize: 14, lineHeight: 20, flex: 1 },
+  noticeText: { color: colors.text, fontSize: 14, lineHeight: 20, flex: 1, fontFamily: fonts.regular },
   empty: { alignItems: 'center', justifyContent: 'center', gap: space.md, padding: space.xl, flex: 1 },
 });

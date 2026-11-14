@@ -3,11 +3,12 @@ import { router } from 'expo-router';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { useDockSpace } from '@/components/Dock';
 import { totalDuration } from '@/ai/director';
 import { Button, EmptyState, timeAgo, Title } from '@/components/ui';
 import { CLIP_COLORS } from '@/data/clipColors';
 import { useStore } from '@/store/AppStore';
-import { colors, radius, space } from '@/theme';
+import { colors, radius, space, fonts } from '@/theme';
 import type { Project } from '@/types';
 
 const STATUS: Record<Project['status'], { text: string; color: string }> = {
@@ -18,6 +19,7 @@ const STATUS: Record<Project['status'], { text: string; color: string }> = {
 };
 
 export default function Studio() {
+  const dockSpace = useDockSpace();
   const { state } = useStore();
   const family = state.family.enabled;
   // In Family Mode only family stories are shown.
@@ -34,13 +36,13 @@ export default function Studio() {
           icon="film-outline"
           title="No projects yet"
           text="Everything you create is saved here. Edit scenes with the AI Director, make the video, then publish it."
-          action={<Button title="Create something" icon="add" onPress={() => router.push('/create')} />}
+          action={<Button title="Open the camera" icon="camera" onPress={() => router.push('/camera')} />}
         />
       ) : (
         <FlatList
           data={projects}
           keyExtractor={(p) => p.id}
-          contentContainerStyle={{ padding: space.md, gap: space.sm }}
+          contentContainerStyle={{ padding: space.md, gap: space.sm, paddingBottom: dockSpace + space.lg }}
           renderItem={({ item: p }) => {
             const st = STATUS[p.status];
             const child = state.family.children.find((c) => c.id === p.familyChildId);
@@ -76,14 +78,14 @@ export default function Studio() {
 
 const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', paddingHorizontal: space.md, paddingTop: space.md },
-  count: { color: colors.textDim, fontWeight: '600' },
+  count: { color: colors.textDim, fontFamily: fonts.bold },
   item: {
     flexDirection: 'row', alignItems: 'center', gap: space.md, padding: space.sm, borderRadius: radius.lg,
     backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border,
   },
   thumb: { width: 54, height: 72, borderRadius: radius.sm, alignItems: 'center', justifyContent: 'center' },
-  title: { color: colors.text, fontWeight: '800', fontSize: 16 },
+  title: { color: colors.text, fontFamily: fonts.heavy, fontSize: 16 },
   meta: { color: colors.textDim, fontSize: 13 },
   badges: { flexDirection: 'row', gap: space.sm, flexWrap: 'wrap' },
-  badge: { fontSize: 12, fontWeight: '800' },
+  badge: { fontSize: 12, fontFamily: fonts.heavy },
 });

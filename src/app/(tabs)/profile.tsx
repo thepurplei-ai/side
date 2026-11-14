@@ -4,16 +4,18 @@ import { useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { useDockSpace } from '@/components/Dock';
 import ProfileHeader from '@/components/ProfileHeader';
 import { Body, Button, Chip } from '@/components/ui';
 import VideoGrid from '@/components/VideoGrid';
 import { useStore } from '@/store/AppStore';
 import { videosByUser } from '@/store/selectors';
-import { colors, radius, space } from '@/theme';
+import { colors, radius, space, fonts } from '@/theme';
 
 type Tab = 'videos' | 'saved' | 'liked';
 
 export default function Profile() {
+  const dockSpace = useDockSpace();
   const { state, dispatch } = useStore();
   const [tab, setTab] = useState<Tab>('videos');
   const me = state.me!;
@@ -34,7 +36,7 @@ export default function Profile() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={['top']}>
-      <ScrollView contentContainerStyle={{ padding: space.md, gap: space.md, paddingBottom: space.xl }}>
+      <ScrollView contentContainerStyle={{ padding: space.md, gap: space.md, paddingBottom: dockSpace + space.lg }}>
         <ProfileHeader user={me} following={Object.keys(state.following).length} likes={likes} videos={mine.length} />
 
         <View style={styles.buttons}>
@@ -86,7 +88,7 @@ const styles = StyleSheet.create({
   buttons: { flexDirection: 'row', gap: space.sm },
   tabs: { flexDirection: 'row', gap: space.sm, justifyContent: 'center', flexWrap: 'wrap' },
   settings: { backgroundColor: colors.surface, borderRadius: radius.lg, padding: space.md, gap: space.md, marginTop: space.lg, borderWidth: 1, borderColor: colors.border },
-  settingsTitle: { color: colors.textDim, fontWeight: '800', textTransform: 'uppercase', fontSize: 13, letterSpacing: 0.8 },
+  settingsTitle: { color: colors.textDim, fontFamily: fonts.heavy, textTransform: 'uppercase', fontSize: 13, letterSpacing: 0.8 },
   row: { flexDirection: 'row', gap: space.md, alignItems: 'center' },
   rowText: { fontSize: 15, flex: 1 },
   version: { color: colors.textDim, textAlign: 'center', fontSize: 12 },

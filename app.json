@@ -21,7 +21,7 @@
     "android": {
       "package": "com.thepurpleiai.side",
       "adaptiveIcon": {
-        "backgroundColor": "#07060B",
+        "backgroundColor": "#0A0A16",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
@@ -36,7 +36,7 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#07060B",
+          "backgroundColor": "#0A0A16",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 120
         }
@@ -49,13 +49,22 @@
           "cameraPermission": "Side uses the camera so you can star in your own AI videos.",
           "microphonePermission": "Side records sound when you film a video for your AI movie."
         }
+      ],
+      "expo-font",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Side uses the camera so you can star in your own AI videos.",
+          "microphonePermission": "Side records sound when you film a video for your AI movie.",
+          "recordAudioAndroid": true
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
     },
-    "backgroundColor": "#07060B",
+    "backgroundColor": "#0A0A16",
     "owner": "thepurplei_ai",
     "web": {
       "output": "single",

@@ -5,20 +5,22 @@ import { Animated, FlatList, Pressable, ScrollView, StyleSheet, Text, useWindowD
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Body, Button, Card, EmptyState, Notice, Title } from '@/components/ui';
+import { useDockSpace } from '@/components/Dock';
 import VideoFeed, { type FeedItem } from '@/components/VideoFeed';
 import { CLIP_COLORS } from '@/data/clipColors';
 import { TEMPLATES } from '@/data/seed';
 import { type AppState, useStore } from '@/store/AppStore';
 import { followingFeed, forYouFeed } from '@/store/selectors';
-import { colors, radius, space } from '@/theme';
+import { colors, radius, space, fonts } from '@/theme';
 
 /** In Family Mode the public feed is hidden. Parents see their family's private stories and gentle ideas instead. */
 function FamilyHome() {
+  const dockSpace = useDockSpace();
   const { state } = useStore();
   const stories = state.projects.filter((p) => p.familyChildId);
   return (
     <SafeAreaView style={{ flex: 1 }} edges={['top']}>
-      <ScrollView contentContainerStyle={{ padding: space.md, gap: space.md }}>
+      <ScrollView contentContainerStyle={{ padding: space.md, gap: space.md, paddingBottom: dockSpace + space.lg }}>
         <Title>Family stories</Title>
         <Notice icon="shield-checkmark" color={colors.family} text="Family Mode is on. The public feed, comments and publishing are switched off. Everything you make stays private on this phone." />
         <Text style={styles.section}>Start a magical story</Text>
@@ -38,7 +40,7 @@ function FamilyHome() {
             <Card key={p.id} style={{ flexDirection: 'row', alignItems: 'center', gap: space.md }}>
               <Ionicons name="film" size={22} color={colors.family} />
               <Pressable style={{ flex: 1 }} onPress={() => router.push(`/project/${p.id}`)}>
-                <Text style={{ color: colors.text, fontWeight: '700' }}>{p.title}</Text>
+                <Text style={{ color: colors.text, fontFamily: fonts.bold }}>{p.title}</Text>
                 <Text style={{ color: colors.textDim }}>
                   {state.family.children.find((c) => c.id === p.familyChildId)?.name ?? 'Family'} · {p.status === 'ready' ? 'Ready to watch' : p.status}
                 </Text>
@@ -55,6 +57,7 @@ function FamilyHome() {
 type Page = 'following' | 'forYou';
 const PAGES: Page[] = ['following', 'forYou'];
 const MAX_ROUNDS = 20;
+const SWITCH_W = 96;
 
 function makeRound(state: AppState, prevLast?: string): string[] {
   const ids = forYouFeed(state, `${Date.now()}-${Math.random()}`).map((v) => v.id);
@@ -67,6 +70,7 @@ export default function Home() {
   const { state } = useStore();
   const { width } = useWindowDimensions();
   const [pageHeight, setPageHeight] = useState(0);
+  const dockSpace = useDockSpace();
   const [page, setPage] = useState<Page>('forYou');
   const pagerRef = useRef<FlatList<Page>>(null);
   const [scrollX] = useState(() => new Animated.Value(width));
@@ -101,7 +105,7 @@ export default function Home() {
     setPage(p);
   };
 
-  const underlineX = scrollX.interpolate({ inputRange: [0, width], outputRange: [-48, 48], extrapolate: 'clamp' });
+  const thumbX = scrollX.interpolate({ inputRange: [0, width], outputRange: [0, SWITCH_W], extrapolate: 'clamp' });
 
   return (
     <View style={{ flex: 1, backgroundColor: '#000' }} onLayout={(e) => setPageHeight(Math.round(e.nativeEvent.layout.height))}>
@@ -124,12 +128,12 @@ export default function Home() {
           <View style={{ width, height: pageHeight }}>
             {item === 'forYou' ? (
               forYouItems.length > 0 ? (
-                <VideoFeed items={forYouItems} active={page === 'forYou'} onRefresh={refresh} onEndReached={more} />
+                <VideoFeed items={forYouItems} active={page === 'forYou'} onRefresh={refresh} onEndReached={more} bottomInset={dockSpace} />
               ) : (
                 <EmptyState icon="sparkles-outline" title="Nothing new right now" text="Be the first to create something!" action={<Button title="Create" onPress={() => router.push('/create')} />} />
               )
             ) : followingItems.length > 0 ? (
-              <VideoFeed items={followingItems} active={page === 'following'} />
+              <VideoFeed items={followingItems} active={page === 'following'} bottomInset={dockSpace} />
             ) : (
               <EmptyState
                 icon="people-outline"
@@ -143,28 +147,32 @@ export default function Home() {
       />
       )}
       <SafeAreaView edges={['top']} style={styles.topBar} pointerEvents="box-none">
-        <View style={styles.tabs}>
+        <Text style={styles.logo}>Side</Text>
+        {/* Sliding switch: follows your finger as you swipe sideways. */}
+        <View style={styles.switch}>
+          <Animated.View style={[styles.switchThumb, { transform: [{ translateX: thumbX }] }]} />
           {PAGES.map((p) => (
-            <Pressable key={p} onPress={() => goTo(p)} hitSlop={8} style={styles.tabButton}>
-              <Text style={[styles.tab, page === p && styles.tabActive]}>{p === 'forYou' ? 'For You' : 'Following'}</Text>
+            <Pressable key={p} onPress={() => goTo(p)} hitSlop={6} style={styles.switchButton}>
+              <Text style={[styles.switchText, page === p && styles.switchTextActive]}>{p === 'forYou' ? 'For You' : 'Following'}</Text>
             </Pressable>
           ))}
         </View>
-        <Animated.View style={[styles.underline, { transform: [{ translateX: underlineX }] }]} />
+        <View style={{ width: 52 }} />
       </SafeAreaView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  topBar: { position: 'absolute', top: 0, left: 0, right: 0, alignItems: 'center' },
-  tabs: { flexDirection: 'row', paddingTop: space.sm },
-  tabButton: { width: 96, alignItems: 'center' },
-  underline: { width: 28, height: 3, borderRadius: 2, backgroundColor: '#fff', marginTop: 4 },
-  tab: { color: 'rgba(255,255,255,0.6)', fontSize: 17, fontWeight: '700', textShadowColor: 'rgba(0,0,0,0.6)', textShadowRadius: 4 },
-  tabActive: { color: '#fff' },
-  section: { color: colors.text, fontSize: 18, fontWeight: '800', marginTop: space.sm },
+  topBar: { position: 'absolute', top: 0, left: 0, right: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space.md, paddingTop: space.sm },
+  logo: { width: 52, color: colors.primary, fontFamily: fonts.displayItalic, fontSize: 24, textShadowColor: 'rgba(0,0,0,0.5)', textShadowRadius: 6 },
+  switch: { flexDirection: 'row', padding: 3, borderRadius: radius.pill, backgroundColor: colors.glass, borderWidth: 1, borderColor: colors.glassBorder, marginTop: space.sm },
+  switchThumb: { position: 'absolute', top: 3, left: 3, width: SWITCH_W, bottom: 3, borderRadius: radius.pill, backgroundColor: colors.primary },
+  switchButton: { width: SWITCH_W, paddingVertical: 7, alignItems: 'center' },
+  switchText: { color: colors.textDim, fontFamily: fonts.heavy, fontSize: 13.5 },
+  switchTextActive: { color: colors.onPrimary },
+  section: { color: colors.text, fontSize: 18, fontFamily: fonts.heavy, marginTop: space.sm },
   ideas: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
   idea: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 12, paddingHorizontal: 14, borderRadius: radius.md },
-  ideaText: { color: '#fff', fontWeight: '800' },
+  ideaText: { color: '#fff', fontFamily: fonts.heavy },
 });

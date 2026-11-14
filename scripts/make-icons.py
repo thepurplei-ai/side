@@ -3,8 +3,10 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import os
 
 OUT = os.path.join(os.path.dirname(__file__), '..', 'assets', 'images')
-FONT = '/usr/share/fonts/opentype/inter/Inter-BlackItalic.otf'
-PINK, PURPLE, BG = (255, 61, 127), (124, 58, 237), (7, 6, 11)
+FONT = os.path.join(os.path.dirname(__file__), '..', 'node_modules', '@expo-google-fonts', 'fraunces', '700Bold_Italic', 'Fraunces_700Bold_Italic.ttf')
+# Midnight Cinema: night-blue gradient with a gold serif S.
+PINK, PURPLE, BG = (40, 32, 92), (10, 10, 22), (10, 10, 22)
+GOLD = (242, 181, 68)
 
 
 def gradient(size):
@@ -17,7 +19,7 @@ def gradient(size):
     return img
 
 
-def mark(size, scale, color='white'):
+def mark(size, scale, color=GOLD):
     """The 'S' with a small sparkle, centred, on a transparent layer."""
     layer = Image.new('RGBA', (size, size), (0, 0, 0, 0))
     d = ImageDraw.Draw(layer)

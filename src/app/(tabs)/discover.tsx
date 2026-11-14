@@ -4,17 +4,19 @@ import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { useDockSpace } from '@/components/Dock';
 import { Avatar, Body, Button, compactNumber, Title } from '@/components/ui';
 import VideoGrid from '@/components/VideoGrid';
 import { CLIP_COLORS } from '@/data/clipColors';
 import { TEMPLATES } from '@/data/seed';
 import { useStore } from '@/store/AppStore';
 import { searchVideos, trending } from '@/store/selectors';
-import { colors, radius, space } from '@/theme';
+import { colors, radius, space, fonts } from '@/theme';
 
 const TAGS = ['superhero', 'space', 'christmas', 'fantasy', 'family', 'ocean', 'scifi'];
 
 export default function Discover() {
+  const dockSpace = useDockSpace();
   const { state, dispatch } = useStore();
   const [query, setQuery] = useState('');
   const family = state.family.enabled;
@@ -24,7 +26,7 @@ export default function Discover() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={['top']}>
-      <ScrollView contentContainerStyle={{ padding: space.md, gap: space.md, paddingBottom: space.xl }} keyboardShouldPersistTaps="handled">
+      <ScrollView contentContainerStyle={{ padding: space.md, gap: space.md, paddingBottom: dockSpace + space.lg }} keyboardShouldPersistTaps="handled">
         <Title>Discover</Title>
 
         {!family && (
@@ -114,12 +116,12 @@ const styles = StyleSheet.create({
   },
   searchInput: { flex: 1, color: colors.text, fontSize: 16, paddingVertical: 12 },
   tag: { paddingVertical: 8, paddingHorizontal: 14, borderRadius: radius.pill, backgroundColor: colors.surface2 },
-  tagText: { color: colors.text, fontWeight: '700' },
-  section: { color: colors.text, fontSize: 19, fontWeight: '800', marginTop: space.sm },
+  tagText: { color: colors.text, fontFamily: fonts.bold },
+  section: { color: colors.text, fontSize: 19, fontFamily: fonts.heavy, marginTop: space.sm },
   template: { width: 150, height: 190, borderRadius: radius.lg, padding: space.md, justifyContent: 'space-between' },
-  templateTitle: { color: '#fff', fontWeight: '900', fontSize: 17 },
-  templateStyle: { color: 'rgba(255,255,255,0.8)', fontSize: 13, fontWeight: '600' },
+  templateTitle: { color: '#fff', fontFamily: fonts.heavy, fontSize: 17 },
+  templateStyle: { color: 'rgba(255,255,255,0.8)', fontSize: 13, fontFamily: fonts.bold },
   creator: { flexDirection: 'row', alignItems: 'center', gap: space.md },
-  creatorName: { color: colors.text, fontWeight: '800', fontSize: 16 },
+  creatorName: { color: colors.text, fontFamily: fonts.heavy, fontSize: 16 },
   creatorMeta: { color: colors.textDim, fontSize: 13 },
 });

@@ -10,7 +10,7 @@ import { generator } from '@/ai/generator';
 import { toVideoSource } from '@/data/clips';
 import { checkText } from '@/services/moderation';
 import { Action, newId, useStore } from '@/store/AppStore';
-import { colors, radius, space } from '@/theme';
+import { colors, radius, space, fonts } from '@/theme';
 import type { DirectorMessage, MediaSource, Project, Visibility } from '@/types';
 
 function touched(p: Project): Project {
@@ -250,7 +250,7 @@ export default function ProjectScreen() {
           <Label>Scenes · {project.style} · {totalDuration(project.scenes)}s</Label>
           {!busy && (
             <Pressable onPress={addScene} hitSlop={8}>
-              <Text style={{ color: colors.primary, fontWeight: '800' }}>+ Add</Text>
+              <Text style={{ color: colors.primary, fontFamily: fonts.heavy }}>+ Add</Text>
             </Pressable>
           )}
         </View>
@@ -315,7 +315,7 @@ export default function ProjectScreen() {
             returnKeyType="send"
           />
           <Pressable style={styles.send} onPress={send} disabled={busy}>
-            <Ionicons name="arrow-up" size={22} color="#fff" />
+            <Ionicons name="arrow-up" size={22} color={colors.onPrimary} />
           </Pressable>
         </View>
 
@@ -361,17 +361,17 @@ const styles = StyleSheet.create({
   container: { padding: space.md, gap: space.md, paddingBottom: space.xl * 2 },
   preview: { width: '70%', alignSelf: 'center', aspectRatio: 9 / 16, borderRadius: radius.lg, overflow: 'hidden', backgroundColor: '#000' },
   placeholder: { alignItems: 'center', justifyContent: 'center', gap: space.md, padding: space.md, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
-  placeholderTitle: { color: colors.text, fontWeight: '800', fontSize: 17, textAlign: 'center' },
+  placeholderTitle: { color: colors.text, fontFamily: fonts.heavy, fontSize: 17, textAlign: 'center' },
   progressTrack: { height: 8, width: '100%', borderRadius: 4, backgroundColor: colors.surface2, overflow: 'hidden' },
   progressFill: { height: 8, backgroundColor: colors.primary },
   cast: { position: 'absolute', top: 12, left: 12, alignItems: 'center', gap: 4 },
-  castImage: { width: 56, height: 56, borderRadius: 28, borderWidth: 3, borderColor: '#fff' },
-  castText: { color: '#fff', fontSize: 9, fontWeight: '900', letterSpacing: 1.2 },
+  castImage: { width: 56, height: 56, borderRadius: 18, borderWidth: 3, borderColor: colors.primary },
+  castText: { color: colors.primary, fontSize: 9, fontFamily: fonts.heavy, letterSpacing: 1.2 },
   castRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
   castSmall: { width: 32, height: 32, borderRadius: 16 },
   rowBetween: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: space.md },
   scene: { flexDirection: 'row', gap: space.md, alignItems: 'flex-start', padding: space.md },
-  sceneNumber: { color: colors.primary, fontWeight: '900', fontSize: 18, width: 20 },
+  sceneNumber: { color: colors.primary, fontFamily: fonts.heavy, fontSize: 18, width: 20 },
   sceneText: { color: colors.text, fontSize: 15, lineHeight: 21, flex: 1 },
   sceneInput: { padding: 0, borderBottomWidth: 1, borderColor: colors.primary },
   sceneMeta: { color: colors.textDim, fontSize: 12, marginTop: 4 },
